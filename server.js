@@ -1,10 +1,11 @@
 var net = require('net')
 let fs = require('fs')
+let publicip = require("public-ip")
 let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
-let host = "127.0.0.1"
+
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -31,7 +32,7 @@ class Client {
 
 let clients = {}
 
-net.createServer((socket) => {
+let server = net.createServer((socket) => {
     delete socket._readableState.decoder; // To force stream to read out numbers
     console.log("CONNECTED: " + socket.remoteAddress + ":" + socket.remotePort)
 
@@ -68,6 +69,7 @@ net.createServer((socket) => {
             }
         }
     )
+
 
     socket.on("data", (data) => {
         currentPacketIdentifier = data.readUInt8()
@@ -142,7 +144,18 @@ net.createServer((socket) => {
                 console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
         }
     })
-}).listen(port, host)
+})
+
+publicip.v4().then(ip => {
+    console.log("Starting server with outward-facing IP: " + ip)
+    server.listen(80, ip, (err) => {
+        console.log("Infinite Pixels server running!")
+    })
+});
+
+server.on("error", (err) => {
+    console.log("SERVER ERROR: " + err)
+})
 
 function shouldAcceptClient(clientid) {
     return true;

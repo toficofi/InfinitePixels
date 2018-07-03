@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "infinitepixels",
+  "version": "1.0.0",
+  "dependencies": {
+    "public-ip": "2.4.0"
+  }
+}
