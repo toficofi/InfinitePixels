@@ -141,12 +141,15 @@ let server = net.createServer((socket) => {
                 playerRemovedPixel(rpixelx, rpixelz)
                 break
             default:
-                console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
+                if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
+                else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
+                
         }
     })
 })
 
 publicip.v4().then(ip => {
+    //ip = "localhost"
     console.log("Starting server with outward-facing IP: " + ip)
     server.listen(80, ip, (err) => {
         console.log("Infinite Pixels server running!")
@@ -393,3 +396,19 @@ function loadChunkAtPosition(position) {
 
      return chunk
 }
+
+/*
+
+/root/InfinitePixels/server.js:144
+                console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
+                                                                                                               ^
+
+TypeError: Cannot read property 'clientid' of undefined
+    at Socket.socket.on (/root/InfinitePixels/server.js:144:112)
+    at emitOne (events.js:96:13)
+    at Socket.emit (events.js:188:7)
+    at readableAddChunk (_stream_readable.js:176:18)
+    at Socket.Readable.push (_stream_readable.js:134:10)
+    at TCP.onread (net.js:547:20)
+
+    */
