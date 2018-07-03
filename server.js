@@ -3,7 +3,7 @@ let fs = require('fs')
 let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
-let port = 6969
+let port = 80
 let host = "127.0.0.1"
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
