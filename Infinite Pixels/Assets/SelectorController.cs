@@ -43,13 +43,13 @@ public class SelectorController : MonoBehaviour {
         selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
         tvDude.transform.GetChild(2).GetComponent<Renderer>().material.color = color; // Box covering face
         tvDude.transform.GetChild(3).GetComponent<Renderer>().material.color = color; // Floating box
-        tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
+        //tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
 
         Material boxCoverMat = tvDude.transform.GetChild(2).GetComponent<Renderer>().material;
-        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(100f));
+        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
 
         Material floatingBoxMat = tvDude.transform.GetChild(3).GetComponent<Renderer>().material;
-        floatingBoxMat.SetColor("_EmissionColor", color);
+        floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
     }
 
 	// Update is called once per frame
