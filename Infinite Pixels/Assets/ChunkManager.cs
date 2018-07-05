@@ -332,9 +332,22 @@ public class ChunkManager : MonoBehaviour {
             }
         }
 
-        foreach (ChunkUpdate chunkUpdate in chunksNeedingUpdate) ProcessChunkData(chunkUpdate);
+        if (chunksNeedingUpdate.Count > 0) {
+            ChunkUpdate[] arrayCopy = new ChunkUpdate[chunksNeedingUpdate.Count];
+            chunksNeedingUpdate.CopyTo(arrayCopy);
+            List<ChunkUpdate> chunkNeedingUpdateCopy = new List<ChunkUpdate>(arrayCopy);
+            try
+            {
+                foreach (ChunkUpdate chunkUpdate in chunkNeedingUpdateCopy) ProcessChunkData(chunkUpdate);
+            } catch (EndOfStreamException exception)
+            {
+                // If end of stream was reached, the socket was disconnected
+                Debug.Log(exception);
+                networkManager.SocketDisconnected();
+            }
 
-        chunksNeedingUpdate.Clear();
+            chunksNeedingUpdate.Clear();
+        }
 
 
         /*

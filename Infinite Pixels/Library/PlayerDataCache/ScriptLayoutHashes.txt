@@ -1,4 +1,4 @@
-Android
+WindowsStandalone
 SceneListBegin?
 Assets/Main.unity
 SceneListEnd?

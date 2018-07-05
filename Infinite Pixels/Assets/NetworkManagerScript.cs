@@ -199,8 +199,8 @@ public class NetworkManagerScript : MonoBehaviour
         }
     }
 
-    void SocketDisconnected()
-    {
+    public void SocketDisconnected() {
+        socketConnection.Close();
         shouldDisplayConnectingPanel = true;
         UpdateConnectingStatus("Reconnecting...");
         this.isConnected = false;
@@ -219,7 +219,6 @@ public class NetworkManagerScript : MonoBehaviour
             currentStream = socketConnection.GetStream();
             //socketConnection.Client.SetKeepAlive(1000, 2);
             requiresConnectionRequest = true;
-            Byte[] bytes = new Byte[1024];
             while (shouldRun)
             {
                 // Current issue - when packets are going fast, more than one packet is being read into the byte buffer.
