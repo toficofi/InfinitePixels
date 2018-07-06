@@ -5,7 +5,7 @@ let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
-
+let connectToLocalhost = false
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -148,7 +148,7 @@ let server = net.createServer((socket) => {
 })
 
 publicip.v4().then(ip => {
-    //ip = "localhost"
+    if (connectToLocalhost) ip = "localhost"
     console.log("Starting server with outward-facing IP: " + ip)
     server.listen(80, ip, (err) => {
         console.log("Infinite Pixels server running!")
@@ -237,6 +237,7 @@ function broadcastChunkPacket(chunk) {
 }
 
 function sendChunkPacket(chunk, client) {
+    console.log("Sending chunk packet " + chunk.x + ", " + chunk.y)
     // If chunk has no pixel data just send a blank chunk packet
     if (Object.keys(chunk.pixels).length == 0) {
         let emptyChunkPacket = new Buffer(5)
@@ -343,7 +344,6 @@ function saveChunks() {
 function saveChunk(chunk) {
     // Don't save if there are no pixels in the chunk
     if (Object.keys(chunk.pixels) == 0) return
-    console.log("Saving chunk " + chunk.x + "," + chunk.y)
 
     var wstream = fs.createWriteStream("world/Chunk" + chunk.x + "," + chunk.y);
     var buffer = new Buffer(chunkSize*chunkSize)

@@ -17,6 +17,7 @@ public class PixelManager : MonoBehaviour {
     // Request a pixel placement from the network with the currently selected colour (doesn't actually put it in the game)
     public void PlacePixel(Vector3 position, Color colour = new Color())
     {
+        CreatePixelAtPosition(position, colour);
         networkManager.SendPixelPlaceBroadcast(position, this.GetComponent<ColourManager>().selectedColour);
     }
 

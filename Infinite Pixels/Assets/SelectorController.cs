@@ -40,15 +40,15 @@ public class SelectorController : MonoBehaviour {
     public void ChangeSelectorColour(Color color)
     {
         selectorCube.GetComponent<Renderer>().material.color = color;
-        selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
-        tvDude.transform.GetChild(2).GetComponent<Renderer>().material.color = color; // Box covering face
-        tvDude.transform.GetChild(3).GetComponent<Renderer>().material.color = color; // Floating box
+        //selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
+        tvDude.transform.GetChild(3).GetComponent<Renderer>().material.color = color; // Box covering face
+        tvDude.transform.GetChild(4).GetComponent<Renderer>().material.color = color; // Floating box
         //tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
 
-        Material boxCoverMat = tvDude.transform.GetChild(2).GetComponent<Renderer>().material;
+        Material boxCoverMat = tvDude.transform.GetChild(3).GetComponent<Renderer>().material;
         boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
 
-        Material floatingBoxMat = tvDude.transform.GetChild(3).GetComponent<Renderer>().material;
+        Material floatingBoxMat = tvDude.transform.GetChild(4).GetComponent<Renderer>().material;
         floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
     }
 

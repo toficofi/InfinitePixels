@@ -59,7 +59,7 @@ public class ChunkManager : MonoBehaviour {
 
     public void ClearChunk(GameObject chunk)
     {
-        foreach (Transform pixel in chunk.transform) Destroy(pixel.gameObject);
+        foreach (Transform pixel in chunk.transform) if (pixel.gameObject != null) Destroy(pixel.gameObject);
     }
 
     string GetChunkId(GameObject chunk)
@@ -72,7 +72,7 @@ public class ChunkManager : MonoBehaviour {
         location.y = 0;
         
         GameObject newChunk = Instantiate<GameObject>(chunkPlane, location, chunkPlane.transform.rotation);
-
+        newChunk.GetComponent<ChunkScript>().networkManager = networkManager;
         chunks.Add(GetChunkId(newChunk), newChunk);
     
 
@@ -131,6 +131,7 @@ public class ChunkManager : MonoBehaviour {
         }
 
         chunk.GetComponent<Renderer>().material.color = new Color(0, 0, 0);//UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        chunk.GetComponent<ChunkScript>().loaded = true;
 
         if (update.data == null) return; // If there is no binary data for this chunk update, it's a blank chunk
 

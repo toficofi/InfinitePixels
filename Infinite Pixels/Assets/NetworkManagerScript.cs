@@ -35,6 +35,7 @@ public class NetworkManagerScript : MonoBehaviour
     List<PositionUpdate> positionsToBeUpdatedInNextFrame = new List<PositionUpdate>();
     public GameObject otherPlayerPrefab;
     public GameObject tvDudePrefab;
+    public bool connectToLocalhost;
 
 
     private List<Vector3> chunksToUpdate = new List<Vector3>();
@@ -215,6 +216,7 @@ public class NetworkManagerScript : MonoBehaviour
         try
         {
             Debug.Log("Making connection to " + host + ":" + port);
+            if (connectToLocalhost) host = "localhost";
             socketConnection = new TcpClient(host, port);
             currentStream = socketConnection.GetStream();
             //socketConnection.Client.SetKeepAlive(1000, 2);
@@ -416,7 +418,7 @@ public class NetworkManagerScript : MonoBehaviour
     {
         Debug.Log("Destroying");
         shouldRun = false;
-        socketConnection.GetStream().Close();
+        if (socketConnection != null && socketConnection.GetStream() != null) socketConnection.GetStream().Close();
     }
 
     void SendConnectionRequest(string identifier)
