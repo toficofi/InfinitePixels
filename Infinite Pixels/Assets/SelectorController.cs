@@ -20,6 +20,7 @@ public class SelectorController : MonoBehaviour {
     public float speedToSwitchToGentleMode;
     public float gentleModeSensitivity;
     public GameObject tvDude;
+    public GameObject spawnEffect;
 
     // Only used in network-controlled mode
     public Vector3 targetPosition;
@@ -31,25 +32,15 @@ public class SelectorController : MonoBehaviour {
         pixelManager = GameObject.Find("PixelCanvas").GetComponent<PixelManager>();
         dragScript = GameObject.Find("DragReciever").GetComponent<DragScript>();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
-
-
         vectorFromCamera =  this.transform.position - Camera.main.transform.position;
+
+        
 	}
-	
 
     public void ChangeSelectorColour(Color color)
     {
         selectorCube.GetComponent<Renderer>().material.color = color;
-        //selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
-        tvDude.transform.GetChild(3).GetComponent<Renderer>().material.color = color; // Box covering face
-        tvDude.transform.GetChild(4).GetComponent<Renderer>().material.color = color; // Floating box
-        //tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
-
-        Material boxCoverMat = tvDude.transform.GetChild(3).GetComponent<Renderer>().material;
-        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
-
-        Material floatingBoxMat = tvDude.transform.GetChild(4).GetComponent<Renderer>().material;
-        floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
+        tvDude.GetComponent<TVDudeScript>().ChangeColour(color);
     }
 
 	// Update is called once per frame
@@ -79,11 +70,18 @@ public class SelectorController : MonoBehaviour {
         }
     }
 
+    public void PlaySpawnEffect()
+    {
+        spawnEffect.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
+        spawnEffect.transform.GetChild(1).GetComponent<ParticleSystem>().Play();
+    }
+
     public void PlacePixel()
     {
         if (velocity.magnitude > 0) return;
+        PlaySpawnEffect();
         GameObject pixel;
-        if ((pixel = this.pixelManager.GetPixelAtPosition(this.transform.position + new Vector3(0.5f, 0, 0.5f))) == null) this.pixelManager.PlacePixel(this.transform.position);
+        if ((pixel = this.pixelManager.GetPixelAtPosition(this.transform.position + new Vector3(0.45f, 0, 0.45f))) == null) this.pixelManager.PlacePixel(this.transform.position);
         else this.pixelManager.RemovePixel(this.transform.position);
     }
 }

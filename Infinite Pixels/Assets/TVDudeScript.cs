@@ -10,6 +10,9 @@ public class TVDudeScript : MonoBehaviour {
     Vector3 followerVelocity;
     public GameObject model;
 
+    public GameObject monitorLight;
+    public GameObject floatingPixel;
+
     private int speedKeyID;
     // Use this for initialization
     void Start () {
@@ -42,5 +45,19 @@ public class TVDudeScript : MonoBehaviour {
 
         if (shouldMove) this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPosition, ref followerVelocity, followLooseness);
         this.transform.position = new Vector3(this.transform.position.x, 0, this.transform.position.z);
+    }
+
+    public void ChangeColour(Color color)
+    {
+        //selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
+        monitorLight.GetComponent<Renderer>().material.color = color; // Box covering face
+        floatingPixel.GetComponent<Renderer>().material.color = color; // Floating box
+        //tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
+
+        Material boxCoverMat = monitorLight.GetComponent<Renderer>().material;
+        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
+
+        Material floatingBoxMat = floatingPixel.GetComponent<Renderer>().material;
+        floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
     }
 }

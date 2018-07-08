@@ -6,19 +6,25 @@ public class PixelManager : MonoBehaviour {
     public GameObject pixelCube;
     public float pixelSize;
     public NetworkManagerScript networkManager;
-
+    ColourManager colourManager;
     List<Vector3> positionsBeingChecked = new List<Vector3>();
 
 	// Use this for initialization
 	void Start () {
         this.networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
-	}
+        this.colourManager = this.GetComponent<ColourManager>();
+
+    }
 
     // Request a pixel placement from the network with the currently selected colour (doesn't actually put it in the game)
-    public void PlacePixel(Vector3 position, Color colour = new Color())
+    public void PlacePixel(Vector3 position)
     {
-        CreatePixelAtPosition(position, colour);
-        networkManager.SendPixelPlaceBroadcast(position, this.GetComponent<ColourManager>().selectedColour);
+        CreatePixelAtPosition(position, colourManager.colours[colourManager.selectedColour]);
+        networkManager.SendPixelPlaceBroadcast(position, colourManager.selectedColour);
+        GameObject chunk = ChunkManager.GetChunkAtPosition(position);
+
+        // Trigger waiting for a reload of the chunk
+        chunk.GetComponent<ChunkScript>().loaded = false;
     }
 
     // Request a pixel removal from the network (doesn't actually destroy the gameobject)

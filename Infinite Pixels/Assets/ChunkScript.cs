@@ -17,7 +17,7 @@ public class ChunkScript : MonoBehaviour {
         // If chunk hasn't updated within 2 seconds request reload
         while (this.isWithinViewingArea)
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             if (!this.loaded) networkManager.RequestChunkUpdate(this.transform.position);
         }
     }
