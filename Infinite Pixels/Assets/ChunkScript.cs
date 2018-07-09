@@ -9,7 +9,7 @@ public class ChunkScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        StartCoroutine(CheckIfChunkLoaded());
+       // StartCoroutine(CheckIfChunkLoaded());
 	}
 	
     IEnumerator CheckIfChunkLoaded()

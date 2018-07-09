@@ -136,7 +136,7 @@ public class NetworkManagerScript : MonoBehaviour
         packet.Write((int)position.z);
 
         currentMemoryStream.WriteTo(currentStream);
-        currentMemoryStream.Flush();
+        //currentMemoryStream.Flush();
     }
 
     public void SendPositionUpdate(Vector3 position, Vector3 velocity)
@@ -160,7 +160,7 @@ public class NetworkManagerScript : MonoBehaviour
 
 
         currentMemoryStream.WriteTo(currentStream);
-        currentMemoryStream.Flush();
+        //currentMemoryStream.Flush();
     }
 
     /// <summary> 	
@@ -434,6 +434,7 @@ public class NetworkManagerScript : MonoBehaviour
 
         byte ident = 0x00;
         packet.Write(ident);
+        packet.Write((byte)identifier.Length);
         packet.Write(Encoding.ASCII.GetBytes(identifier));
         currentMemoryStream.WriteTo(currentStream);
         currentMemoryStream.Flush();

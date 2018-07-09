@@ -5,10 +5,11 @@ using UnityEngine;
 public class ColourManager : MonoBehaviour {
     public Color[] colours = new Color[15];
     public int selectedColour = 1;
+    public GameObject selector;
 
 	// Use this for initialization
 	void Start () {
-		
+	   	
 	}
 	
 	// Update is called once per frame
@@ -18,7 +19,7 @@ public class ColourManager : MonoBehaviour {
 
     public void OnColourChanged(int colour)
     {
-        GameObject.Find("selector").GetComponent<SelectorController>().ChangeSelectorColour(colours[colour]);
+        selector.GetComponent<SelectorController>().ChangeSelectorColour(colours[colour]);
         this.selectedColour = colour;
     }
 }

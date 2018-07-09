@@ -5,7 +5,7 @@ let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
-let connectToLocalhost = true
+let connectToLocalhost = false
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -70,82 +70,165 @@ let server = net.createServer((socket) => {
     )
 
 
-    socket.on("data", (data) => {
-        currentPacketIdentifier = data.readUInt8()
-        //console.log("Recieving new packet, identifier: " + currentPacketIdentifier.toString(16))
-
-        switch (currentPacketIdentifier) {
-            case 0: 
-                let clientid = data.toString("ascii", 1)
-                
-                let shouldAccept = shouldAcceptClient(clientid)
-
-                response = null
-                if (shouldAccept) {
-                    response = new Buffer([0x01])
-                    
-                    console.log("Accepted client " + clientid)
-                    socket.client = new Client(clientid, socket)
-                    clients[clientid] = socket.client
-                } else {
-                    console.log("Banned client " + clientid)
-                    response = new Buffer([0x02])
-                    response = Buffer.concat([response, new Buffer.from("Banned from server", "ascii")])
-                }
-
-                socket.write(response)
-                break
-            case 3:
-                let posx = data.readFloatLE(1)
-                let posz = data.readFloatLE(5)
-                let velx = data.readFloatLE(9)
-                let velz = data.readFloatLE(13)
-                socket.client.position.x = posx
-                socket.client.position.y = posz
-                socket.client.velocity.x = velx
-                socket.client.velocity.z = velz
-
-                for (key in clients) {
-                    clnt = clients[key]
-                    if (clnt.clientid == socket.client.clientid) continue
-                
-                    let updateOtherPlayersPacket = new Buffer(18)
-                    updateOtherPlayersPacket.writeInt8(0x04, 0)
-                    updateOtherPlayersPacket.writeFloatLE(posx, 1)
-                    updateOtherPlayersPacket.writeFloatLE(posz, 5)
-                    updateOtherPlayersPacket.writeFloatLE(velx, 9)
-                    updateOtherPlayersPacket.writeFloatLE(velz, 13)
-                    updateOtherPlayersPacket.writeUInt8(socket.client.clientid.length, 17)
-                    updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, new Buffer.from(socket.client.clientid, "ascii")])
-                    clnt.socket.write(updateOtherPlayersPacket)
-                }
-                break
-            case 6:
-                let chunkx = data.readInt32LE(1)
-                let chunkz = data.readInt32LE(5)
-                newChunk = getChunkAtPosition({x: chunkx, y: chunkz})
-                sendChunkPacket(newChunk, socket.client)
-                break
-            case 7:
-                // Pixel placement packet
-                let pixelx = data.readInt32LE(1)
-                let pixelz = data.readInt32LE(5)
-                let pixelid = data.readInt32LE(9)
-                playerPlacedPixel(pixelx, pixelz, pixelid)
-                break
-            case 8:
-                // Pixel removal packet
-                let rpixelx = data.readInt32LE(1)
-                let rpixelz = data.readInt32LE(5)
-                playerRemovedPixel(rpixelx, rpixelz)
-                break
-            default:
-                if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
-                else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
-                
-        }
-    })
+    socket.on("data", (data) => readData(data, socket))
 })
+
+function readString(data, offset) {
+    let stringLength = data.readUInt8(offset)
+    let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
+    console.log("Reading string of length " + stringLength + " - " + string)
+    return string
+}
+
+// Call this function at the start of a packet to pull information from the header
+function getPacketInformationFromHeader (data) {
+    let currentPacketIdentifier = data.readUInt8()
+    let length = 0 // Expected length of the packet not including the identifier
+
+    switch (currentPacketIdentifier) {
+        // Connection request
+        case 0:
+            stringLength = data.readUInt8(1)
+            length = stringLength + 1
+            break
+        // Position update 
+        case 3:
+            length = 16
+            break
+        // Chunk update request
+        case 6:
+            length = 8
+            break
+        // Pixel placement packet
+        case 7:
+            length = 12
+            break
+        // Pixel removeal packet
+        case 8:
+            length = 8
+            break
+    }
+
+    slicedData = data.slice(1)
+
+    return {ident: currentPacketIdentifier,
+            length: length, 
+            slicedData: slicedData}
+}
+
+
+function processPacket(data, socket) {
+    let identifier = currentPacketInfo.ident
+
+    console.log("Packet finished - processing " + identifier + " - " + data.length + " bytes long")
+
+    switch (identifier) {
+        case 0: 
+            let clientid = readString(data, 0)
+            
+            let shouldAccept = shouldAcceptClient(clientid)
+
+            response = null
+            if (shouldAccept) {
+                response = new Buffer([0x01])
+                
+                console.log("Accepted client " + clientid)
+                socket.client = new Client(clientid, socket)
+                clients[clientid] = socket.client
+            } else {
+                console.log("Banned client " + clientid)
+                response = new Buffer([0x02])
+                response = Buffer.concat([response, new Buffer.from("Banned from server", "ascii")])
+            }
+
+            socket.write(response)
+            break
+        case 3:
+            let posx = data.readFloatLE(0)
+            let posz = data.readFloatLE(4)
+            let velx = data.readFloatLE(8)
+            let velz = data.readFloatLE(12)
+            socket.client.position.x = posx
+            socket.client.position.y = posz
+            socket.client.velocity.x = velx
+            socket.client.velocity.z = velz
+
+            for (key in clients) {
+                clnt = clients[key]
+                if (clnt.clientid == socket.client.clientid) continue
+            
+                let updateOtherPlayersPacket = new Buffer(18)
+                updateOtherPlayersPacket.writeInt8(0x04, 0)
+                updateOtherPlayersPacket.writeFloatLE(posx, 1)
+                updateOtherPlayersPacket.writeFloatLE(posz, 5)
+                updateOtherPlayersPacket.writeFloatLE(velx, 9)
+                updateOtherPlayersPacket.writeFloatLE(velz, 13)
+                updateOtherPlayersPacket.writeUInt8(socket.client.clientid.length, 17)
+                updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, new Buffer.from(socket.client.clientid, "ascii")])
+                clnt.socket.write(updateOtherPlayersPacket)
+            }
+            break
+        case 6:
+            let chunkx = data.readInt32LE(0)
+            let chunkz = data.readInt32LE(4)
+            newChunk = getChunkAtPosition({x: chunkx, y: chunkz})
+            sendChunkPacket(newChunk, socket.client)
+            break
+        case 7:
+            // Pixel placement packet
+            let pixelx = data.readInt32LE(0)
+            let pixelz = data.readInt32LE(4)
+            let pixelid = data.readInt32LE(8)
+            playerPlacedPixel(pixelx, pixelz, pixelid)
+            break
+        case 8:
+            // Pixel removal packet
+            let rpixelx = data.readInt32LE(0)
+            let rpixelz = data.readInt32LE(4)
+            playerRemovedPixel(rpixelx, rpixelz)
+            break
+        default:
+            if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
+            else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
+            
+    }
+}
+
+expectsNewPacket = true
+packetBuffer = new Buffer(0)
+expectedLengthRemaining = 0
+currentPacketInfo = null
+nextPacketData = null
+
+
+function readData(data, socket) {
+    console.log("Read chunk of data " + data.length + " bytes long")
+
+    while (data.length > 0) {
+        if (expectsNewPacket) {
+            packetBuffer = new Buffer(0)
+            currentPacketInfo = getPacketInformationFromHeader(data)
+            data = currentPacketInfo.slicedData
+            console.log("New packet: ident " + currentPacketInfo.ident + ", length: " + currentPacketInfo.length)
+            expectedLengthRemaining = currentPacketInfo.length
+            expectsNewPacket = false
+        }
+
+
+        // If the data is more than the rest of the packet, just concat the rest of the packet and remove it from our block
+        if (data.length >= expectedLengthRemaining) {
+            packetBuffer = Buffer.concat([packetBuffer, data.slice(0, expectedLengthRemaining)]) 
+            data = data.slice(expectedLengthRemaining)
+
+            processPacket(packetBuffer, socket)
+            expectsNewPacket = true
+        } else {
+            // Or if the data length is less than what we need, just add all that we can and we'll add more later
+            packetBuffer = Buffer.concat([packetBuffer, data.slice(0, data.length)])
+            data = data.slice(data.length)
+        }
+    }
+}
 
 publicip.v4().then(ip => {
     if (connectToLocalhost) ip = "localhost"

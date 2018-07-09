@@ -120,7 +120,7 @@ public class ChunkManager : MonoBehaviour {
     public void ProcessChunkData(ChunkUpdate update)
     {
         GameObject chunk = GetChunkFromExactPosition(new Vector3(update.x, 0, update.z));
-        ClearChunk(chunk);
+
 
         if (!chunk)
         {
@@ -129,6 +129,8 @@ public class ChunkManager : MonoBehaviour {
             // Don't request another update for this new chunk
             chunk = CreateChunk(new Vector3(update.x, 0, update.z), false);
         }
+
+        ClearChunk(chunk);
 
         chunk.GetComponent<Renderer>().material.color = new Color(0, 0, 0);//UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
         chunk.GetComponent<ChunkScript>().loaded = true;

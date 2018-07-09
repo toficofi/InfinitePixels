@@ -130,7 +130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &54883771
 RectTransform:
   m_ObjectHideFlags: 0
@@ -241,7 +241,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &61132916
 RectTransform:
   m_ObjectHideFlags: 0
@@ -373,7 +373,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 8.68, y: 25.1}
+  m_AnchoredPosition: {x: 8.68, y: 25.099976}
   m_SizeDelta: {x: 32, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114560956
@@ -516,6 +516,7 @@ MonoBehaviour:
   - {r: 0.5764706, g: 0.7137255, b: 0.75686276, a: 1}
   - {r: 0.33333334, g: 0.44313726, b: 0.52156866, a: 1}
   selectedColour: 1
+  selector: {fileID: 603503087}
 --- !u!1 &349851035
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,7 +612,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &500680546
 RectTransform:
   m_ObjectHideFlags: 0
@@ -745,6 +746,11 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 543946704}
+--- !u!1 &603503087 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1455398763721364, guid: 3c5258490c61af14b91cf40e43410a35,
+    type: 2}
+  m_PrefabInternal: {fileID: 1524958536}
 --- !u!1 &642195017
 GameObject:
   m_ObjectHideFlags: 0
@@ -836,7 +842,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &757865154
 RectTransform:
   m_ObjectHideFlags: 0
@@ -974,6 +980,14 @@ Prefab:
       propertyPath: target
       value: 
       objectReference: {fileID: 479475951}
+    - target: {fileID: 1687852363368192, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1312127951819286, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
   m_IsPrefabParent: 0
@@ -1569,7 +1583,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1508751316
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1866,7 +1880,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1587273326
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2051,7 +2065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1739819570
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2182,10 +2196,11 @@ MonoBehaviour:
   connectingPanel: {fileID: 1082993689}
   connectingPanelText: {fileID: 1556569805}
   isConnected: 0
-  otherPlayerPrefab: {fileID: 1517175685558040, guid: fd0ac53977ea9bc4398dc1d835f6e53f,
+  otherPlayerPrefab: {fileID: 1455398763721364, guid: 3c5258490c61af14b91cf40e43410a35,
     type: 2}
-  tvDudePrefab: {fileID: 78067929}
-  connectToLocalhost: 1
+  tvDudePrefab: {fileID: 1557582353078564, guid: 39364e7c75e50b348b226a195cd28eb2,
+    type: 2}
+  connectToLocalhost: 0
 --- !u!4 &1945849246
 Transform:
   m_ObjectHideFlags: 0
@@ -2524,7 +2539,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2111701639
 RectTransform:
   m_ObjectHideFlags: 0
