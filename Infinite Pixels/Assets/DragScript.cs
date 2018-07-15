@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class DragScript : MonoBehaviour {
-    Camera mainCamera;
+    public GameObject cameras;
     bool mouseDown = false;
     public Vector2 lastPosition = new Vector2(0, 0);
     public SelectorController selector;
 
 	// Use this for initialization
 	void Start () {
-        mainCamera = Camera.main;
         selector = GameObject.Find("selector").GetComponent<SelectorController>();
 	}
 
@@ -37,8 +36,8 @@ public class DragScript : MonoBehaviour {
         if (selector.velocity.z > selector.maxSpeed) selector.velocity.z = selector.maxSpeed;
         if (selector.velocity.x < -selector.maxSpeed) selector.velocity.x = -selector.maxSpeed;
         if (selector.velocity.z < -selector.maxSpeed) selector.velocity.z = -selector.maxSpeed;
-        if (selector.velocity.magnitude < 0.001f) selector.velocity = new Vector2(0, 0);
-        mainCamera.transform.position -= selector.velocity;
+        if (selector.velocity.magnitude < 0.05f) selector.velocity = new Vector2(0, 0);
+        cameras.transform.position -= selector.velocity;
         selector.gameObject.transform.position -= selector.velocity;
     }
 

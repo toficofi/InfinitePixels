@@ -16,7 +16,7 @@ ff05dcdf90651c3d98a9cad3df5e471e UnityEngine.Timeline.dll:UnityEngine.Timeline.C
 9ca6347af5ceb6b0d1c105af31b6722e UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.PixelScript
 6184a87e7c2346d99ac1b224e2d1a7ca Assembly-CSharp.dll:.ChunkManager
-a0042268c98212684b9d6f131aae975b Assembly-CSharp.dll:.ColourManager
+66ede044ba9b9729db555f0367a9848d Assembly-CSharp.dll:.ColourManager
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 49cd62a578efc0a599b810a2b66cd49c UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -147,9 +147,11 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
-6107a54fb529366e9eb25c1360d1c19f Assembly-CSharp.dll:.SelectorController
+6a4d6b98a52222343e8dd7408eeee0ae Assembly-CSharp.dll:.SelectorController
 f671a42aea5f34fec6a4450a3668c615 Assembly-CSharp.dll:UnityEngine.PostProcessing.PostProcessingProfile
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 0da285ca81110cdbeca354d722bd909e Assembly-CSharp.dll:.TVDudeScript
 484ab3aa9c15ac2f0784b88cbee12b5e Assembly-CSharp.dll:.CameraFollow
-f6325ec7437a5f257e94cc8047ef7fae Assembly-CSharp.dll:.DragScript
+f82796aeac2e5e557754f5c5a711a357 Assembly-CSharp.dll:.DragScript
+57f612bb7bb93d1e1795caca25aab643 Assembly-CSharp.dll:.CameraScript
+d51614dcbdffcaa2c584dd23c14561f8 Assembly-CSharp.dll:.CameraDataScript

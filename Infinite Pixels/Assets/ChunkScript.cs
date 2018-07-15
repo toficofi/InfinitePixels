@@ -9,7 +9,7 @@ public class ChunkScript : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-       // StartCoroutine(CheckIfChunkLoaded());
+       StartCoroutine(CheckIfChunkLoaded());
 	}
 	
     IEnumerator CheckIfChunkLoaded()
@@ -17,7 +17,7 @@ public class ChunkScript : MonoBehaviour {
         // If chunk hasn't updated within 2 seconds request reload
         while (this.isWithinViewingArea)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(5f);
             if (!this.loaded) networkManager.RequestChunkUpdate(this.transform.position);
         }
     }

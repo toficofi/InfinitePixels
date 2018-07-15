@@ -285,7 +285,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\CameraDataScript.cs" />
     <Compile Include="Assets\CameraFollow.cs" />
+    <Compile Include="Assets\CameraScript.cs" />
     <Compile Include="Assets\ChunkManager.cs" />
     <Compile Include="Assets\ChunkScript.cs" />
     <Compile Include="Assets\ColourManager.cs" />

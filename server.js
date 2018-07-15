@@ -76,7 +76,6 @@ let server = net.createServer((socket) => {
 function readString(data, offset) {
     let stringLength = data.readUInt8(offset)
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
-    console.log("Reading string of length " + stringLength + " - " + string)
     return string
 }
 
@@ -119,8 +118,6 @@ function getPacketInformationFromHeader (data) {
 
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
-
-    console.log("Packet finished - processing " + identifier + " - " + data.length + " bytes long")
 
     switch (identifier) {
         case 0: 
@@ -202,14 +199,12 @@ nextPacketData = null
 
 
 function readData(data, socket) {
-    console.log("Read chunk of data " + data.length + " bytes long")
-
     while (data.length > 0) {
+        // If we expect the next data to be a new packet, read the length and identifier
         if (expectsNewPacket) {
             packetBuffer = new Buffer(0)
             currentPacketInfo = getPacketInformationFromHeader(data)
             data = currentPacketInfo.slicedData
-            console.log("New packet: ident " + currentPacketInfo.ident + ", length: " + currentPacketInfo.length)
             expectedLengthRemaining = currentPacketInfo.length
             expectsNewPacket = false
         }

@@ -310,6 +310,7 @@ MonoBehaviour:
   gentleModeSensitivity: 0.002
   tvDude: {fileID: 0}
   spawnEffect: {fileID: 1502852981189970}
+  cameras: {fileID: 0}
   targetPosition: {x: 0, y: 0, z: 0}
 --- !u!198 &198181289261031046
 ParticleSystem:

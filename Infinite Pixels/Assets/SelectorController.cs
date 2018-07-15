@@ -21,6 +21,7 @@ public class SelectorController : MonoBehaviour {
     public float gentleModeSensitivity;
     public GameObject tvDude;
     public GameObject spawnEffect;
+    public GameObject cameras;
 
     // Only used in network-controlled mode
     public Vector3 targetPosition;
@@ -32,7 +33,7 @@ public class SelectorController : MonoBehaviour {
         pixelManager = GameObject.Find("PixelCanvas").GetComponent<PixelManager>();
         dragScript = GameObject.Find("DragReciever").GetComponent<DragScript>();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
-        vectorFromCamera =  this.transform.position - Camera.main.transform.position;
+        vectorFromCamera =  this.transform.position - cameras.transform.position;
 
         
 	}
@@ -48,7 +49,7 @@ public class SelectorController : MonoBehaviour {
         // If this is the client player selector, send position update after calculating
         if (playerSelector)
         {
-            Vector3 exactPosition = Camera.main.transform.position + vectorFromCamera;
+            Vector3 exactPosition = cameras.transform.position + vectorFromCamera;
 
             // Move the selector smoothly if still moving, otherwise snap to the grid
             if (dragScript.IsResting()) this.transform.position = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
