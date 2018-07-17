@@ -132,7 +132,7 @@ public class ChunkManager : MonoBehaviour {
 
         ClearChunk(chunk);
 
-        chunk.GetComponent<Renderer>().material.color = new Color(0, 0, 0);//UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+       // chunk.GetComponent<Renderer>().material.color = new Color(0, 0, 0);//UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
         chunk.GetComponent<ChunkScript>().loaded = true;
 
         if (update.data == null) return; // If there is no binary data for this chunk update, it's a blank chunk
@@ -148,7 +148,7 @@ public class ChunkManager : MonoBehaviour {
                 if (pixelColourAtPosition > 0) // Not empty
                 {
                     positionToCheck = chunkWisePixelPosToWorld(positionToCheck, new Vector3(update.x, 0, update.z));
-                    this.GetComponent<PixelManager>().CreatePixelAtPosition(positionToCheck, this.GetComponent<ColourManager>().colours[pixelColourAtPosition]);
+                    this.GetComponent<PixelManager>().CreatePixelAtPosition(positionToCheck, this.GetComponent<ColourManager>().ColorToMaterial(pixelColourAtPosition));
                 }
             }
         }

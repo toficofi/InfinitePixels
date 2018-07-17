@@ -19,7 +19,7 @@ public class PixelManager : MonoBehaviour {
     // Request a pixel placement from the network with the currently selected colour (doesn't actually put it in the game)
     public void PlacePixel(Vector3 position)
     {
-        CreatePixelAtPosition(position, colourManager.colours[colourManager.selectedColour]);
+        CreatePixelAtPosition(position, colourManager.ColorToMaterial(colourManager.selectedColour));
         networkManager.SendPixelPlaceBroadcast(position, colourManager.selectedColour);
         GameObject chunk = ChunkManager.GetChunkAtPosition(position);
 
@@ -34,7 +34,7 @@ public class PixelManager : MonoBehaviour {
     }
 
     // Creates and places a pixel gameobject in the game
-    public void CreatePixelAtPosition(Vector3 position, Color colour = new Color())
+    public void CreatePixelAtPosition(Vector3 position, Material colour)
     {
         // To center the pixel
         position += new Vector3(0.5f, 0f, 0.5f);
@@ -43,7 +43,7 @@ public class PixelManager : MonoBehaviour {
         pixelCubeClone.transform.GetChild(0).GetComponent<TextMesh>().text = position.x + ", " + position.y + ", " + position.z;
         pixelCubeClone.transform.SetParent(chunk.transform);
        // pixelCubeClone.GetComponent<Renderer>().material.color = this.GetComponent<ColourManager>().colours[this.GetComponent<ColourManager>().selectedColour];
-        pixelCubeClone.GetComponent<Renderer>().material.color = colour;
+        pixelCubeClone.GetComponent<Renderer>().material = colour;
     }
 
     public GameObject GetPixelAtPosition(Vector3 position)
