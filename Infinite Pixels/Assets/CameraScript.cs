@@ -33,7 +33,7 @@ public class CameraScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        ChangeToCamera(cameras[0]);
 	}
 	
 	// Update is called once per frame

@@ -24,6 +24,7 @@ public class DragScript : MonoBehaviour {
         if (mouseDown)
         {
             Vector2 delta = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - lastPosition;
+            delta.y *= 1.5f; // Compensate for horizontal display
             if (selector.velocity.magnitude < selector.speedToSwitchToGentleMode) delta *= selector.gentleModeSensitivity;
             else delta *= selector.sensitivity;
             selector.velocity += new Vector3(delta.x, 0, delta.y);

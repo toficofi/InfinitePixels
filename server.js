@@ -84,6 +84,8 @@ function getPacketInformationFromHeader (data) {
     let currentPacketIdentifier = data.readUInt8()
     let length = 0 // Expected length of the packet not including the identifier
 
+    if (currentPacketIdentifier === null) return null
+
     switch (currentPacketIdentifier) {
         // Connection request
         case 0:
@@ -204,6 +206,11 @@ function readData(data, socket) {
         if (expectsNewPacket) {
             packetBuffer = new Buffer(0)
             currentPacketInfo = getPacketInformationFromHeader(data)
+            if (currentPacketInfo === null) {
+             console.log("Got null data from socket " + socket.remoteAddress + " - look into this!")
+             socket.end() 
+             return  
+            }// TODO: Figure out why this happens
             data = currentPacketInfo.slicedData
             expectedLengthRemaining = currentPacketInfo.length
             expectsNewPacket = false

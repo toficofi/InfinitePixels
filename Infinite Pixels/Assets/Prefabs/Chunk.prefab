@@ -21,8 +21,6 @@ GameObject:
   - component: {fileID: 4242439731630772}
   - component: {fileID: 33822595444360436}
   - component: {fileID: 23538992814307492}
-  - component: {fileID: 95944592304990758}
-  - component: {fileID: 65881222253775760}
   - component: {fileID: 114312623899494962}
   m_Layer: 0
   m_Name: Chunk
@@ -85,35 +83,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1008621032180202}
   m_Mesh: {fileID: 4300000, guid: 0a58b7977b4892e4cbb65dd2b5db896d, type: 3}
---- !u!65 &65881222253775760
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1008621032180202}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 16, y: 16.000004, z: 0.20000005}
-  m_Center: {x: 0, y: 0, z: 0.100000024}
---- !u!95 &95944592304990758
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1008621032180202}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 0a58b7977b4892e4cbb65dd2b5db896d, type: 3}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114312623899494962
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -125,9 +94,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb0643099331fb64099432781bf346f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkOnRight: {fileID: 0}
-  chunkOnLeft: {fileID: 0}
-  chunkOnTop: {fileID: 0}
-  chunkOnBottom: {fileID: 0}
   loaded: 0
   isWithinViewingArea: 1
+  networkManager: {fileID: 0}

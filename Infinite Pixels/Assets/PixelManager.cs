@@ -7,13 +7,14 @@ public class PixelManager : MonoBehaviour {
     public float pixelSize;
     public NetworkManagerScript networkManager;
     ColourManager colourManager;
+    ChunkManager chunkManager;
     List<Vector3> positionsBeingChecked = new List<Vector3>();
 
 	// Use this for initialization
 	void Start () {
         this.networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
         this.colourManager = this.GetComponent<ColourManager>();
-
+        this.chunkManager = this.GetComponent<ChunkManager>();
     }
 
     // Request a pixel placement from the network with the currently selected colour (doesn't actually put it in the game)
@@ -21,7 +22,7 @@ public class PixelManager : MonoBehaviour {
     {
         CreatePixelAtPosition(position, colourManager.ColorToMaterial(colourManager.selectedColour));
         networkManager.SendPixelPlaceBroadcast(position, colourManager.selectedColour);
-        GameObject chunk = ChunkManager.GetChunkAtPosition(position);
+        GameObject chunk = chunkManager.GetChunkAtPosition(position);
 
         // Trigger waiting for a reload of the chunk
         chunk.GetComponent<ChunkScript>().loaded = false;
@@ -38,16 +39,21 @@ public class PixelManager : MonoBehaviour {
     {
         // To center the pixel
         position += new Vector3(0.5f, 0f, 0.5f);
-        GameObject chunk = ChunkManager.GetChunkAtPosition(position);
+        GameObject chunk = chunkManager.GetChunkAtPosition(position);
         GameObject pixelCubeClone = Instantiate<GameObject>(pixelCube, position, pixelCube.transform.localRotation);
         pixelCubeClone.transform.GetChild(0).GetComponent<TextMesh>().text = position.x + ", " + position.y + ", " + position.z;
         pixelCubeClone.transform.SetParent(chunk.transform);
        // pixelCubeClone.GetComponent<Renderer>().material.color = this.GetComponent<ColourManager>().colours[this.GetComponent<ColourManager>().selectedColour];
         pixelCubeClone.GetComponent<Renderer>().material = colour;
+        Vector3 untransformedPos = position - new Vector3(0.5f, 0f, 0.5f);
+        pixelCubeClone.name = "Pixel" + untransformedPos.x + "," + untransformedPos.z;
     }
 
     public GameObject GetPixelAtPosition(Vector3 position)
     {
+        return GameObject.Find("Pixel" + (int)position.x + "," + (int)position.z);
+
+        /*
         positionsBeingChecked.Remove(position);
         positionsBeingChecked.Add(position);
 
@@ -60,7 +66,7 @@ public class PixelManager : MonoBehaviour {
             if (collider.gameObject.tag == "Pixel") return collider.gameObject;
         }
 
-        return null;
+        return null;*/
     }
 
     public void OnDrawGizmos()

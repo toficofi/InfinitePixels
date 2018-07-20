@@ -81,8 +81,9 @@ public class SelectorController : MonoBehaviour {
     {
         if (velocity.magnitude > 0) return;
         PlaySpawnEffect();
-        GameObject pixel;
-        if ((pixel = this.pixelManager.GetPixelAtPosition(this.transform.position + new Vector3(0.45f, 0, 0.45f))) == null) this.pixelManager.PlacePixel(this.transform.position);
+        GameObject pixel = this.pixelManager.GetPixelAtPosition(this.transform.position);
+        Debug.Log("Placing pixel at " + this.transform.position);
+        if (pixel == null) this.pixelManager.PlacePixel(this.transform.position);
         else this.pixelManager.RemovePixel(this.transform.position);
     }
 }

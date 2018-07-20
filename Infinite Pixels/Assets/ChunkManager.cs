@@ -30,6 +30,7 @@ public class ChunkManager : MonoBehaviour {
     public float viewingDistance;
     public float chunkPlaneSize;
     public string worldFolder;
+    public int secondsBeforeUnloadingOldChunks;
 
     NetworkManagerScript networkManager;
     List<GameObject> chunksToRemove = new List<GameObject>();
@@ -247,8 +248,12 @@ public class ChunkManager : MonoBehaviour {
         }
     }*/
 
-    public static GameObject GetChunkAtPosition(Vector3 position)
+    public GameObject GetChunkAtPosition(Vector3 position)
     {
+        Vector3 snappedPosition = SnapPositionToChunk(position);
+        return GameObject.Find("Chunk" + snappedPosition.x + "," + snappedPosition.z);
+        /*
+        return GameObject.Find("Chunk" + SnapPositionToChunk(position))
         Collider[] colliders;
         colliders = Physics.OverlapSphere(position, 0.25f);
        
@@ -261,7 +266,7 @@ public class ChunkManager : MonoBehaviour {
             }
         }
 
-        return null;
+        return null;*/
     }
 
     public Vector3 SnapPositionToChunk(Vector3 position)
@@ -286,7 +291,7 @@ public class ChunkManager : MonoBehaviour {
             {
                 GameObject chunk = chunkPair.Value;
 
-                if (!chunk.GetComponent<ChunkScript>().isWithinViewingArea)
+                if (chunk.GetComponent<ChunkScript>().secondsSinceLastView >= secondsBeforeUnloadingOldChunks)
                 {
                     Destroy(chunk);
                 }
