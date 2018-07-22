@@ -201,34 +201,40 @@ nextPacketData = null
 
 
 function readData(data, socket) {
-    while (data.length > 0) {
-        // If we expect the next data to be a new packet, read the length and identifier
-        if (expectsNewPacket) {
-            packetBuffer = new Buffer(0)
-            currentPacketInfo = getPacketInformationFromHeader(data)
-            if (currentPacketInfo === null) {
-             console.log("Got null data from socket " + socket.remoteAddress + " - look into this!")
-             socket.end() 
-             return  
-            }// TODO: Figure out why this happens
-            data = currentPacketInfo.slicedData
-            expectedLengthRemaining = currentPacketInfo.length
-            expectsNewPacket = false
+    try {
+        while (data.length > 0) {
+            // If we expect the next data to be a new packet, read the length and identifier
+            if (expectsNewPacket) {
+                packetBuffer = new Buffer(0)
+                currentPacketInfo = getPacketInformationFromHeader(data)
+                if (currentPacketInfo === null) {
+                console.log("Got null data from socket " + socket.remoteAddress + " - look into this!")
+                socket.end() 
+                return  
+                }// TODO: Figure out why this happens
+                data = currentPacketInfo.slicedData
+                expectedLengthRemaining = currentPacketInfo.length
+                expectsNewPacket = false
+            }
+
+
+            // If the data is more than the rest of the packet, just concat the rest of the packet and remove it from our block
+            if (data.length >= expectedLengthRemaining) {
+                packetBuffer = Buffer.concat([packetBuffer, data.slice(0, expectedLengthRemaining)]) 
+                data = data.slice(expectedLengthRemaining)
+
+                processPacket(packetBuffer, socket)
+                expectsNewPacket = true
+            } else {
+                // Or if the data length is less than what we need, just add all that we can and we'll add more later
+                packetBuffer = Buffer.concat([packetBuffer, data.slice(0, data.length)])
+                data = data.slice(data.length)
+            }
         }
-
-
-        // If the data is more than the rest of the packet, just concat the rest of the packet and remove it from our block
-        if (data.length >= expectedLengthRemaining) {
-            packetBuffer = Buffer.concat([packetBuffer, data.slice(0, expectedLengthRemaining)]) 
-            data = data.slice(expectedLengthRemaining)
-
-            processPacket(packetBuffer, socket)
-            expectsNewPacket = true
-        } else {
-            // Or if the data length is less than what we need, just add all that we can and we'll add more later
-            packetBuffer = Buffer.concat([packetBuffer, data.slice(0, data.length)])
-            data = data.slice(data.length)
-        }
+    } catch (e) {
+        console.log("While processing packet for " + socket.remoteAddress + ", client " + socket.client + " - got this error:")
+        console.log(e.stack)
+        socket.end()
     }
 }
 
