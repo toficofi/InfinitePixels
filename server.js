@@ -234,7 +234,6 @@ function readData(data, socket) {
     } catch (e) {
         console.log("While processing packet for " + socket.remoteAddress + ", client " + socket.client + " - got this error:")
         console.log(e.stack)
-        socket.end()
     }
 }
 
