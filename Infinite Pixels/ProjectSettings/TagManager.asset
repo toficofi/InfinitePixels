@@ -7,6 +7,7 @@ TagManager:
   - Chunk
   - Pixel
   - SwatchColour
+  - Swatch
   layers:
   - Default
   - TransparentFX

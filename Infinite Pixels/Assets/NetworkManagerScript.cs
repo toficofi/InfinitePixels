@@ -36,7 +36,7 @@ public class NetworkManagerScript : MonoBehaviour
     public GameObject otherPlayerPrefab;
     public GameObject tvDudePrefab;
     public bool connectToLocalhost;
-
+    public string currentPlayerName;
 
     private List<Vector3> chunksToUpdate = new List<Vector3>();
     private List<string> clientQuits = new List<string>();
@@ -55,6 +55,7 @@ public class NetworkManagerScript : MonoBehaviour
         //uniqueIdentifier = SystemInfo.deviceUniqueIdentifier;
 
         uniqueIdentifier = "player" + UnityEngine.Random.Range(0, 1000);
+        currentPlayerName = uniqueIdentifier;
         shouldDisplayConnectingPanel = true;
         StartCoroutine(CheckIfSocketAlive());
         UpdateConnectingStatus("Connecting...");
@@ -64,6 +65,31 @@ public class NetworkManagerScript : MonoBehaviour
     void UpdateConnectingStatus(string status)
     {
         connectingPanelTextMessage = status;
+    }
+
+    public void UpdateThisPlayerName(string newName)
+    {
+        Debug.Log("Updating player name to " + newName);
+        currentPlayerName = newName;
+
+        if (!isConnected) return;
+        BinaryWriter packet = GetPreparedPacket();
+
+        if (packet == null)
+        {
+            Debug.Log("Couldn't send Name Update packet");
+            return;
+        }
+
+        byte ident = 0x09;
+
+        packet.Write(ident);
+        packet.Write((byte)newName.Length);
+        packet.Write(Encoding.ASCII.GetBytes(newName));
+
+
+        currentMemoryStream.WriteTo(currentStream);
+        currentMemoryStream.Flush();
     }
 
 
@@ -320,7 +346,10 @@ public class NetworkManagerScript : MonoBehaviour
     public static string ReadASCII(BinaryReader reader)
     {
         byte length = reader.ReadByte();
+       
         byte[] characters = reader.ReadBytes(length);
+        Debug.Log("Reading string of length " + length);
+        foreach (byte byt in characters) Debug.Log(byt);
         return Encoding.ASCII.GetString(characters);
     }
 
@@ -335,6 +364,7 @@ public class NetworkManagerScript : MonoBehaviour
                 isConnected = true;
                 this.waitingForReconnect = false;
                 tryingForReconnect = false;
+                UpdateThisPlayerName(currentPlayerName);
                 break;
             case 0x02: // Connection rejected
                 string message = ReadASCII(reader);//ReadASCIIFromReader(reader, 1, packetLength - (int)currentMemoryStream.Position);
@@ -359,15 +389,26 @@ public class NetworkManagerScript : MonoBehaviour
                 BinaryReader chunkDataCopy = CopyBytesFromNetworkToMemory(reader, ((int)chunkManager.chunkPlaneSize * (int)chunkManager.chunkPlaneSize) + 4);
                 chunkManager.LoadChunkFromNetwork(chunkDataCopy);
                 break;
-            case 0x10:
+            case 0xA:
                 // Another player has quit
                 string clientQuitId = ReadASCII(reader);
                 ClientHasQuit(clientQuitId);
+                break;
+            case 0xB:
+                // Another player updated name
+                string playerId = ReadASCII(reader);
+                string playerName = ReadASCII(reader);
+                PlayerUpdatedName(playerId, playerName);
                 break;
             default:
                 Debug.Log("Invalid packet - " + identifier);
                 break;
         }
+    }
+
+    void PlayerUpdatedName(string playerId, string playerName)
+    {
+        Debug.Log("Player ID " + playerId + " updated their name to " + playerName);
     }
 
     public void ClientHasQuit(string clientQuitId)
@@ -436,6 +477,7 @@ public class NetworkManagerScript : MonoBehaviour
         packet.Write(ident);
         packet.Write((byte)identifier.Length);
         packet.Write(Encoding.ASCII.GetBytes(identifier));
+
         currentMemoryStream.WriteTo(currentStream);
         currentMemoryStream.Flush();
 

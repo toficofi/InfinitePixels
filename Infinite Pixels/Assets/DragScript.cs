@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DragScript : MonoBehaviour {
     public GameObject cameras;
+    public float thresholdBeforeClearingDrag;
     bool mouseDown = false;
     public Vector2 lastPosition = new Vector2(0, 0);
     public SelectorController selector;
@@ -37,7 +38,7 @@ public class DragScript : MonoBehaviour {
         if (selector.velocity.z > selector.maxSpeed) selector.velocity.z = selector.maxSpeed;
         if (selector.velocity.x < -selector.maxSpeed) selector.velocity.x = -selector.maxSpeed;
         if (selector.velocity.z < -selector.maxSpeed) selector.velocity.z = -selector.maxSpeed;
-        if (selector.velocity.magnitude < 0.05f) selector.velocity = new Vector2(0, 0);
+        if (selector.velocity.magnitude < thresholdBeforeClearingDrag && !mouseDown) selector.velocity = new Vector2(0, 0);
         cameras.transform.position -= selector.velocity;
         selector.gameObject.transform.position -= selector.velocity;
     }

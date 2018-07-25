@@ -5,7 +5,7 @@ let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
-let connectToLocalhost = false
+let connectToLocalhost = true
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -76,6 +76,7 @@ let server = net.createServer((socket) => {
 function readString(data, offset) {
     let stringLength = data.readUInt8(offset)
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
+    console.log("Read string " + string + " length " + stringLength + " at offset " + offset)
     return string
 }
 
@@ -108,6 +109,10 @@ function getPacketInformationFromHeader (data) {
         case 8:
             length = 8
             break
+        case 9:
+            stringLength = data.readUInt8(1)
+            length = stringLength + 1
+            break
     }
 
     slicedData = data.slice(1)
@@ -124,16 +129,18 @@ function processPacket(data, socket) {
     switch (identifier) {
         case 0: 
             let clientid = readString(data, 0)
-            
+
             let shouldAccept = shouldAcceptClient(clientid)
 
             response = null
             if (shouldAccept) {
                 response = new Buffer([0x01])
                 
-                console.log("Accepted client " + clientid)
+          
                 socket.client = new Client(clientid, socket)
+                socket.client.name = clientid
                 clients[clientid] = socket.client
+                console.log("Accepted client " + clientid)
             } else {
                 console.log("Banned client " + clientid)
                 response = new Buffer([0x02])
@@ -185,6 +192,27 @@ function processPacket(data, socket) {
             let rpixelx = data.readInt32LE(0)
             let rpixelz = data.readInt32LE(4)
             playerRemovedPixel(rpixelx, rpixelz)
+            break
+        case 9:
+            console.log("Player updated name, packet size: " + data.length)
+            // Player updated name
+            let playerName = readString(data, 0)
+            socket.client.name = playerName
+            console.log("Player " + socket.client.clientid + " updated name to " + playerName)
+            for (key in clients) {
+                clnt = clients[key]
+                //if (clnt.clientid == socket.client.clientid) continue
+            
+                let updateOtherPlayersPacket = new Buffer(2)
+                updateOtherPlayersPacket.writeInt8(0xB, 0)
+                updateOtherPlayersPacket.writeUInt8(socket.client.clientid.length, 1)
+                updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, new Buffer.from(socket.client.clientid, "ascii")])
+
+                let secondStringLength = new Buffer(1)
+                secondStringLength.writeUInt8(playerName.length, 0)
+                updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, secondStringLength, new Buffer.from(playerName, "ascii")])
+                clnt.socket.write(updateOtherPlayersPacket)
+            }
             break
         default:
             if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
@@ -310,7 +338,7 @@ function broadcastClientQuit(clientid) {
         if (cid == clientid) continue
         let clnt = clients[cid]
         let packet = new Buffer(2)
-        packet.writeInt8(0x10, 0)
+        packet.writeInt8(0xA, 0)
         packet.writeUInt8(clientid.length, 1)
         packet = Buffer.concat([packet, new Buffer.from(clientid, "ascii")])
         console.log("Broadcasting client quit " + clientid)
@@ -327,7 +355,6 @@ function broadcastChunkPacket(chunk) {
 }
 
 function sendChunkPacket(chunk, client) {
-    console.log("Sending chunk packet " + chunk.x + ", " + chunk.y)
     // If chunk has no pixel data just send a blank chunk packet
     if (Object.keys(chunk.pixels).length == 0) {
         let emptyChunkPacket = new Buffer(5)
