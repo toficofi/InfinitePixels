@@ -5,6 +5,7 @@ using UnityEngine;
 public class CameraScript : MonoBehaviour {
     public Camera currentCamera;
     public ChunkManager chunkManager;
+    public SelectorController selector;
     public List<Camera> cameras;
     public int cameraLevel = 0;
 
@@ -29,6 +30,7 @@ public class CameraScript : MonoBehaviour {
         currentCamera = cam;
         currentCamera.enabled = true;
         chunkManager.viewingDistance = currentCamera.gameObject.GetComponent<CameraDataScript>().viewingArea;
+        //selector.vectorFromCamera = selector.transform.position - currentCamera.transform.position;y
     }
 
 	// Use this for initialization

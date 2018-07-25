@@ -13,14 +13,27 @@ public class TVDudeScript : MonoBehaviour {
     public GameObject monitorLight;
     public GameObject floatingPixel;
 
+    public GameObject nameText;
+    public CameraScript cameraScript;
+    public Color colour;
+
+
     private int speedKeyID;
     // Use this for initialization
     void Start () {
         speedKeyID = Animator.StringToHash("speed");
-        
-        model.GetComponent<Renderer>().material.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f) / 2f;
+        cameraScript = GameObject.Find("Cameras").GetComponent<CameraScript>();
+        Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f) / 2f;
+        color.a = 1;
+        ChangeTVDudeColour(color);
     }
 	
+    public void ChangeTVDudeColour(Color color)
+    {
+        model.GetComponent<Renderer>().material.color = color;
+        this.colour = color;
+    }
+
 	// Update is called once per frame
 	void Update () {
         Vector3 targetPosition = new Vector3(target.position.x, this.transform.position.y, target.position.z);
@@ -45,6 +58,22 @@ public class TVDudeScript : MonoBehaviour {
 
         if (shouldMove) this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPosition, ref followerVelocity, followLooseness);
         this.transform.position = new Vector3(this.transform.position.x, 0, this.transform.position.z);
+        
+        Camera currentCam = cameraScript.currentCamera;
+        OrientToCamera(nameText, currentCam);
+    }
+
+    public void OrientToCamera(GameObject obj, Camera camera)
+    {
+        Vector3 v = camera.transform.position - obj.transform.position;
+        v.x = v.z = 0.0f;
+        obj.transform.LookAt(camera.transform.position - v);
+        obj.transform.Rotate(0, 180, 0);
+    }
+
+    public void ChangeName(string newName)
+    {
+        nameText.GetComponent<TextMesh>().text = newName;
     }
 
     public void ChangeColour(Color color)

@@ -8,11 +8,19 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
-struct PositionUpdate
+struct OtherPlayerPositionUpdate
 {
     public string id;
     public Vector2 position;
     public Vector2 velocity;
+}
+
+struct OtherPlayerInfoUpdate
+{
+    public string id;
+    public Color colour;
+    public int selectorColour;
+    public string name;
 }
 
 public class NetworkManagerScript : MonoBehaviour
@@ -32,12 +40,15 @@ public class NetworkManagerScript : MonoBehaviour
     bool requiresConnectionRequest = true;
     bool waitingForReconnect = false;
     bool tryingForReconnect = false;
-    List<PositionUpdate> positionsToBeUpdatedInNextFrame = new List<PositionUpdate>();
+    List<OtherPlayerPositionUpdate> positionsToBeUpdatedInNextFrame = new List<OtherPlayerPositionUpdate>();
+    List<OtherPlayerInfoUpdate> playerInfoToBeUpdatedInNextFrame = new List<OtherPlayerInfoUpdate>();
     public GameObject otherPlayerPrefab;
     public GameObject tvDudePrefab;
+    public TVDudeScript tvDude;
     public bool connectToLocalhost;
     public string currentPlayerName;
-
+    public ColourManager colourManager;
+    public int secondsBetweenInfoUpdate;
     private List<Vector3> chunksToUpdate = new List<Vector3>();
     private List<string> clientQuits = new List<string>();
     private ChunkManager chunkManager;
@@ -56,8 +67,10 @@ public class NetworkManagerScript : MonoBehaviour
 
         uniqueIdentifier = "player" + UnityEngine.Random.Range(0, 1000);
         currentPlayerName = uniqueIdentifier;
+        tvDude.ChangeName(currentPlayerName);
         shouldDisplayConnectingPanel = true;
         StartCoroutine(CheckIfSocketAlive());
+        StartCoroutine(SendPlayerInfoUpdate());
         UpdateConnectingStatus("Connecting...");
         ConnectToTcpServer();
     }
@@ -67,29 +80,40 @@ public class NetworkManagerScript : MonoBehaviour
         connectingPanelTextMessage = status;
     }
 
-    public void UpdateThisPlayerName(string newName)
+    public IEnumerator SendPlayerInfoUpdate()
     {
-        Debug.Log("Updating player name to " + newName);
-        currentPlayerName = newName;
-
-        if (!isConnected) return;
-        BinaryWriter packet = GetPreparedPacket();
-
-        if (packet == null)
+        while (this.isActiveAndEnabled)
         {
-            Debug.Log("Couldn't send Name Update packet");
-            return;
+            yield return new WaitForSeconds(secondsBetweenInfoUpdate);
+            if (!isConnected) continue;
+            Debug.Log("Sending player info update");
+            string name = currentPlayerName;
+            Color playerColor = tvDude.colour;
+            int selectorColor = colourManager.selectedColour;
+
+            if (!isConnected) continue;
+            BinaryWriter packet = GetPreparedPacket();
+
+            if (packet == null)
+            {
+                Debug.Log("Couldn't send Player Info Update packet");
+                continue;
+            }
+
+            byte ident = 0x09;
+
+            packet.Write(ident);
+            packet.Write(playerColor.r);
+            packet.Write(playerColor.g);
+            packet.Write(playerColor.b);
+            packet.Write(selectorColor);
+            packet.Write((byte)name.Length);
+            packet.Write(Encoding.ASCII.GetBytes(name));
+
+
+            currentMemoryStream.WriteTo(currentStream);
+            currentMemoryStream.Flush();
         }
-
-        byte ident = 0x09;
-
-        packet.Write(ident);
-        packet.Write((byte)newName.Length);
-        packet.Write(Encoding.ASCII.GetBytes(newName));
-
-
-        currentMemoryStream.WriteTo(currentStream);
-        currentMemoryStream.Flush();
     }
 
 
@@ -110,10 +134,16 @@ public class NetworkManagerScript : MonoBehaviour
             }
            
 
-            foreach (PositionUpdate update in positionsToBeUpdatedInNextFrame)
+            foreach (OtherPlayerPositionUpdate update in positionsToBeUpdatedInNextFrame)
             {
                 ProcessUpdatePosition(update.id, update.position, update.velocity);
             }
+
+            foreach (OtherPlayerInfoUpdate update in playerInfoToBeUpdatedInNextFrame)
+            {
+                ProcessInfoUpdate(update.id, update.colour, update.selectorColour, update.name);
+            }
+
 
             foreach (string clientQuitId in clientQuits)
             {
@@ -128,6 +158,7 @@ public class NetworkManagerScript : MonoBehaviour
 
             clientQuits.Clear();
             positionsToBeUpdatedInNextFrame.Clear();
+            playerInfoToBeUpdatedInNextFrame.Clear();
         }
 
         if (requiresConnectionRequest) SendConnectionRequest(uniqueIdentifier);
@@ -348,8 +379,6 @@ public class NetworkManagerScript : MonoBehaviour
         byte length = reader.ReadByte();
        
         byte[] characters = reader.ReadBytes(length);
-        Debug.Log("Reading string of length " + length);
-        foreach (byte byt in characters) Debug.Log(byt);
         return Encoding.ASCII.GetString(characters);
     }
 
@@ -364,7 +393,6 @@ public class NetworkManagerScript : MonoBehaviour
                 isConnected = true;
                 this.waitingForReconnect = false;
                 tryingForReconnect = false;
-                UpdateThisPlayerName(currentPlayerName);
                 break;
             case 0x02: // Connection rejected
                 string message = ReadASCII(reader);//ReadASCIIFromReader(reader, 1, packetLength - (int)currentMemoryStream.Position);
@@ -397,8 +425,12 @@ public class NetworkManagerScript : MonoBehaviour
             case 0xB:
                 // Another player updated name
                 string playerId = ReadASCII(reader);
+                float r = reader.ReadSingle();
+                float g = reader.ReadSingle();
+                float b = reader.ReadSingle();
+                int selectorColour = reader.ReadInt32();
                 string playerName = ReadASCII(reader);
-                PlayerUpdatedName(playerId, playerName);
+                GotOtherPlayerInfoPacket(playerId, new Color(r, g, b), selectorColour, playerName);
                 break;
             default:
                 Debug.Log("Invalid packet - " + identifier);
@@ -406,9 +438,17 @@ public class NetworkManagerScript : MonoBehaviour
         }
     }
 
-    void PlayerUpdatedName(string playerId, string playerName)
+    void GotOtherPlayerInfoPacket(string playerId, Color colour, int selectorColour, string playerName)
     {
-        Debug.Log("Player ID " + playerId + " updated their name to " + playerName);
+        Debug.Log("Player ID " + playerId + " updated their name to " + playerName + ", their colour to " + colour + ", and selector colour to " + selectorColour);
+        OtherPlayerInfoUpdate update = new OtherPlayerInfoUpdate();
+        update.id = playerId;
+        update.name = playerName;
+        update.colour = colour;
+        update.selectorColour = selectorColour;
+
+        playerInfoToBeUpdatedInNextFrame.Add(update);
+
     }
 
     public void ClientHasQuit(string clientQuitId)
@@ -416,6 +456,7 @@ public class NetworkManagerScript : MonoBehaviour
         clientQuits.Add(clientQuitId);
     }
 
+    // If updateInfo is true, then we're only updating the player name and colour, not the position
     public void ProcessUpdatePosition(string otherid, Vector2 position, Vector2 velocity)
     {
         GameObject otherPlayer = GameObject.Find(otherid);
@@ -440,10 +481,27 @@ public class NetworkManagerScript : MonoBehaviour
         controller.targetPosition = new Vector3(position.x, 0, position.y);
     }
 
+    public void ProcessInfoUpdate(string otherid, Color colour, int selectorColor, string name)
+    {
+        GameObject otherPlayer = GameObject.Find(otherid);
+        if (otherPlayer == null)
+        {
+            Debug.Log("Got info update for player " + otherid + " but not got position yet, discarding");
+            return;
+        }
+
+        SelectorController selector = otherPlayer.GetComponent<SelectorController>();
+        TVDudeScript otherTVDude = selector.tvDude.GetComponent<TVDudeScript>();
+
+
+        selector.ChangeSelectorColour(colourManager.colours[selectorColor]);
+        otherTVDude.ChangeTVDudeColour(colour);
+        otherTVDude.ChangeName(name);
+    }
 
     public void UpdatePositionForOtherPlayer(string otherid, Vector2 position, Vector2 velocity)
     {
-        PositionUpdate upd = new PositionUpdate();
+        OtherPlayerPositionUpdate upd = new OtherPlayerPositionUpdate();
         upd.id = otherid;
         upd.position = position;
         upd.velocity = velocity;

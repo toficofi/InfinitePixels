@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SelectorController : MonoBehaviour {
     PixelManager pixelManager;
-    Vector3 vectorFromCamera;
+    public Vector3 vectorFromCamera;
     public GameObject selectorCube;
     DragScript dragScript;
     NetworkManagerScript networkManager;
@@ -33,9 +33,7 @@ public class SelectorController : MonoBehaviour {
         pixelManager = GameObject.Find("PixelCanvas").GetComponent<PixelManager>();
         dragScript = GameObject.Find("DragReciever").GetComponent<DragScript>();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
-        vectorFromCamera =  this.transform.position - cameras.transform.position;
-
-        
+        if (playerSelector) vectorFromCamera =  this.transform.position - cameras.transform.position;
 	}
 
     public void ChangeSelectorColour(Color color)

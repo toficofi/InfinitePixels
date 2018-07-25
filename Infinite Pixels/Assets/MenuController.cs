@@ -18,13 +18,15 @@ public class MenuController : MonoBehaviour {
     public GameObject reportButton;
     public GameObject settingsButton;
     public GameObject teleportButton;
+    public TVDudeScript tvDude;
 
     public InputField nameField;
+    public GameObject randomizeColourButton;
 
 	// Use this for initialization
 	void Start () {
-		
-	}
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -50,6 +52,7 @@ public class MenuController : MonoBehaviour {
         teleportButton.SetActive(false);
 
         nameField.text = networkManager.currentPlayerName;
+        randomizeColourButton.GetComponent<Image>().color = tvDude.colour;
     }
     
     public void CloseMenu()
@@ -86,7 +89,16 @@ public class MenuController : MonoBehaviour {
         newName = Util.ConvertToASCII(newName);
         nameField.text = newName;
 
-        networkManager.UpdateThisPlayerName(newName);
+        tvDude.ChangeName(newName);
+        networkManager.currentPlayerName = newName;
+    }
+
+    public void RandomizeColourClicked()
+    {
+        Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f) / 2f;
+        color.a = 1;
+        tvDude.ChangeTVDudeColour(color);
+        randomizeColourButton.GetComponent<Image>().color = color;
     }
 
     // Triggered when the screen was tapped outside of the menu, just close it

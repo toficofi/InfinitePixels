@@ -5,7 +5,7 @@ let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
-let connectToLocalhost = true
+let connectToLocalhost = false
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -110,8 +110,8 @@ function getPacketInformationFromHeader (data) {
             length = 8
             break
         case 9:
-            stringLength = data.readUInt8(1)
-            length = stringLength + 1
+            stringLength = data.readUInt8(17)
+            length = stringLength + 17
             break
     }
 
@@ -139,6 +139,8 @@ function processPacket(data, socket) {
           
                 socket.client = new Client(clientid, socket)
                 socket.client.name = clientid
+                socket.client.colour = {r: 1.0, g: 1.0, b: 1.0}
+                socket.client.selectorColour = 1
                 clients[clientid] = socket.client
                 console.log("Accepted client " + clientid)
             } else {
@@ -194,29 +196,57 @@ function processPacket(data, socket) {
             playerRemovedPixel(rpixelx, rpixelz)
             break
         case 9:
-            console.log("Player updated name, packet size: " + data.length)
-            // Player updated name
-            let playerName = readString(data, 0)
+            console.log("Player update packet")
+            // Player information packet
+            let r = data.readFloatLE(0)
+            let g = data.readFloatLE(4)
+            let b = data.readFloatLE(8)
+            let selectorColour = data.readInt32LE(12)
+
+            let playerName = readString(data, 16)
+
+            if (playerName.length > 20) {
+                console.log("Got invalid player name length: " + playerName.length + " from " + socket.client.clientid)
+                socket.end()
+                return
+            }
+
+            if (selectorColour < 0 || selectorColour > 14) {
+                console.log("Got invalid selector colour " + selectorColour + " from " + socket.client.clientid)
+                socket.end()
+                return
+            }
+
             socket.client.name = playerName
-            console.log("Player " + socket.client.clientid + " updated name to " + playerName)
+            socket.client.colour = {r: r, g: g, b: b}
+            socket.client.selectorColour = selectorColour
+        
+            console.log("Player " + socket.client.clientid + " updated name to " + playerName + ", colour to " + JSON.stringify(socket.client.colour) + " and selector colour to " + selectorColour)
+
+            
             for (key in clients) {
                 clnt = clients[key]
-                //if (clnt.clientid == socket.client.clientid) continue
+                if (clnt.clientid == socket.client.clientid) continue
             
                 let updateOtherPlayersPacket = new Buffer(2)
                 updateOtherPlayersPacket.writeInt8(0xB, 0)
                 updateOtherPlayersPacket.writeUInt8(socket.client.clientid.length, 1)
                 updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, new Buffer.from(socket.client.clientid, "ascii")])
 
-                let secondStringLength = new Buffer(1)
-                secondStringLength.writeUInt8(playerName.length, 0)
-                updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, secondStringLength, new Buffer.from(playerName, "ascii")])
+                let integerInfo = new Buffer(17)
+                integerInfo.writeFloatLE(r, 0)
+                integerInfo.writeFloatLE(g, 4)
+                integerInfo.writeFloatLE(b, 8)
+                integerInfo.writeInt32LE(selectorColour, 12)
+                integerInfo.writeUInt8(playerName.length, 16)
+                updateOtherPlayersPacket = Buffer.concat([updateOtherPlayersPacket, integerInfo, new Buffer.from(playerName, "ascii")])
                 clnt.socket.write(updateOtherPlayersPacket)
             }
             break
         default:
             if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
             else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
+            socket.end()
             
     }
 }

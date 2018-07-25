@@ -8,6 +8,7 @@ TagManager:
   - Pixel
   - SwatchColour
   - Swatch
+  - Billboard
   layers:
   - Default
   - TransparentFX
