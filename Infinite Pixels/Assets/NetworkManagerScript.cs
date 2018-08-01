@@ -47,12 +47,13 @@ public class NetworkManagerScript : MonoBehaviour
     public TVDudeScript tvDude;
     public bool connectToLocalhost;
     public string currentPlayerName;
+    public MenuController menuController;
     public ColourManager colourManager;
     public int secondsBetweenInfoUpdate;
     private List<Vector3> chunksToUpdate = new List<Vector3>();
     private List<string> clientQuits = new List<string>();
     private ChunkManager chunkManager;
-
+    bool blurred = false;
     
 
     #region private members 	
@@ -71,7 +72,7 @@ public class NetworkManagerScript : MonoBehaviour
         shouldDisplayConnectingPanel = true;
         StartCoroutine(CheckIfSocketAlive());
         StartCoroutine(SendPlayerInfoUpdate());
-        UpdateConnectingStatus("Connecting...");
+        UpdateConnectingStatus("CONNECTING");
         ConnectToTcpServer();
     }
 
@@ -122,6 +123,26 @@ public class NetworkManagerScript : MonoBehaviour
     {
         connectingPanelText.GetComponent<Text>().text = connectingPanelTextMessage;
         connectingPanel.SetActive(shouldDisplayConnectingPanel);
+
+        // This is to avoid the DoF option being toggled repeatedly every update
+        if (shouldDisplayConnectingPanel)
+        {
+            if (!blurred)
+            {
+                menuController.BlurBackground();
+                blurred = true;
+            }
+        }
+        else
+        {
+            if (blurred)
+            {
+                menuController.UnBlurBackground();
+                blurred = false;
+            }
+        }
+
+
 
         if (this.isConnected)
         {
@@ -260,7 +281,7 @@ public class NetworkManagerScript : MonoBehaviour
     public void SocketDisconnected() {
         socketConnection.Close();
         shouldDisplayConnectingPanel = true;
-        UpdateConnectingStatus("Reconnecting...");
+        UpdateConnectingStatus("RECONNECTING");
         this.isConnected = false;
         waitingForReconnect = true;
         tryingForReconnect = false;

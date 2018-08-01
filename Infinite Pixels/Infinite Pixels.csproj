@@ -292,6 +292,7 @@
     <Compile Include="Assets\ChunkScript.cs" />
     <Compile Include="Assets\ColourManager.cs" />
     <Compile Include="Assets\DragScript.cs" />
+    <Compile Include="Assets\InputFieldTextFitter.cs" />
     <Compile Include="Assets\MenuController.cs" />
     <Compile Include="Assets\NetworkManagerScript.cs" />
     <Compile Include="Assets\PixelManager.cs" />
@@ -343,6 +344,8 @@
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\SelectorController.cs" />
     <Compile Include="Assets\SwatchContainerSlider.cs" />
+    <Compile Include="Assets\TeleportMenuScript.cs" />
+    <Compile Include="Assets\TextFitter.cs" />
     <Compile Include="Assets\TVDudeScript.cs" />
     <Compile Include="Assets\Util.cs" />
   </ItemGroup>

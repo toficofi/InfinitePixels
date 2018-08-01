@@ -8,7 +8,9 @@ using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour {
     public PostProcessingProfile profile;
+
     public GameObject settingsMenu;
+    public GameObject teleportMenu;
 
     public bool menuIsOpen = false;
     public NetworkManagerScript networkManager;
@@ -18,6 +20,7 @@ public class MenuController : MonoBehaviour {
     public GameObject reportButton;
     public GameObject settingsButton;
     public GameObject teleportButton;
+    public GameObject swatches;
     public TVDudeScript tvDude;
 
     public InputField nameField;
@@ -50,11 +53,35 @@ public class MenuController : MonoBehaviour {
         zoomOut.SetActive(false);
         reportButton.SetActive(false);
         teleportButton.SetActive(false);
+        swatches.transform.localScale = new Vector3(0, 0, 0);
 
         nameField.text = networkManager.currentPlayerName;
         randomizeColourButton.GetComponent<Image>().color = tvDude.colour;
     }
-    
+
+    public void ClickTeleportButton()
+    {
+        // If menu is already open, clicking button closes the menu
+        if (menuIsOpen)
+        {
+            CloseMenu();
+            return;
+        }
+
+        BlurBackground();
+        teleportButton.SetActive(true);
+        menuIsOpen = true;
+
+        teleportMenu.SetActive(true);
+
+        zoomIn.SetActive(false);
+        zoomOut.SetActive(false);
+        reportButton.SetActive(false);
+        settingsButton.SetActive(false);
+
+        swatches.transform.localScale = new Vector3(0, 0, 0);
+    }
+
     public void CloseMenu()
     {
         UnBlurBackground();
@@ -63,8 +90,10 @@ public class MenuController : MonoBehaviour {
         reportButton.SetActive(true);
         teleportButton.SetActive(true);
         settingsButton.SetActive(true);
+        swatches.transform.localScale = new Vector3(1, 1, 1);
 
         settingsMenu.SetActive(false);
+        teleportMenu.SetActive(false);
         menuIsOpen = false;
     }
     
@@ -76,6 +105,7 @@ public class MenuController : MonoBehaviour {
 
     public void UnBlurBackground()
     {
+        Debug.Log("UNblurring");
         profile.depthOfField.enabled = false;
         profile.colorGrading.enabled = false;
     }

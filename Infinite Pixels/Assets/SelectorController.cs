@@ -69,6 +69,11 @@ public class SelectorController : MonoBehaviour {
         }
     }
 
+    public Vector3 GetSnappedPosition()
+    {
+        return new Vector3(Mathf.Round(this.transform.position.x), 0, Mathf.Round(this.transform.position.z));
+    }
+
     public void PlaySpawnEffect()
     {
         spawnEffect.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
