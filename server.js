@@ -131,6 +131,9 @@ function getPacketInformationFromHeader (data) {
             slicedData: slicedData}
 }
 
+function endConnection(socket) {
+    socket.destroy()
+}
 
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
@@ -234,13 +237,13 @@ function processPacket(data, socket) {
 
             if (playerName.length > 20) {
                 console.log("Got invalid player name length: " + playerName.length + " from " + socket.client.clientid)
-                socket.end()
+                endConnection(socket)
                 return
             }
 
             if (selectorColour < 0 || selectorColour > 14) {
                 console.log("Got invalid selector colour " + selectorColour + " from " + socket.client.clientid)
-                socket.end()
+                endConnection(socket)
                 return
             }
 
@@ -273,7 +276,7 @@ function processPacket(data, socket) {
         default:
             if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
             else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
-            socket.end()
+            endConnection(socket)
             
     }
 }
@@ -294,7 +297,7 @@ function readData(data, socket) {
                 currentPacketInfo = getPacketInformationFromHeader(data)
                 if (currentPacketInfo === null) {
                 console.log("Got null data from socket " + socket.remoteAddress + " - look into this!")
-                socket.end() 
+                endConnection(socket)
                 return  
                 }// TODO: Figure out why this happens
                 data = currentPacketInfo.slicedData
@@ -317,8 +320,9 @@ function readData(data, socket) {
             }
         }
     } catch (e) {
-        console.log("While processing packet for " + socket.remoteAddress + ", client " + socket.client + " - got this error:")
+        console.log("While processing packet for " + socket.remoteAddress + " - got this error:")
         console.log(e.stack)
+        endConnection(socket)
     }
 }
 
