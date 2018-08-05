@@ -5,6 +5,7 @@ let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
+let worldSize = 5000
 let connectToLocalhost = true
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
@@ -78,6 +79,14 @@ function readString(data, offset) {
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
     console.log("Read string " + string + " length " + stringLength + " at offset " + offset)
     return string
+}
+
+function isWithinWorldBounds(x, y) {
+    if (x > worldSize) return false;
+    if (x < -worldSize) return false
+    if (y > worldSize) return false;
+    if (y < -worldSize) return false;
+    return true;
 }
 
 // Call this function at the start of a packet to pull information from the header
@@ -179,6 +188,12 @@ function processPacket(data, socket) {
         case 6:
             let chunkx = data.readInt32LE(0)
             let chunkz = data.readInt32LE(4)
+
+            if (!isWithinWorldBounds(chunkx, chunkz)) {
+                console.log("Client " + socket.client.clientid + " tried to request chunk outwith world size of " + worldSize + ", chunk " + chunkx + ", " + chunkz)
+                break;
+            }
+
             newChunk = getChunkAtPosition({x: chunkx, y: chunkz})
             sendChunkPacket(newChunk, socket.client)
             break
@@ -186,13 +201,25 @@ function processPacket(data, socket) {
             // Pixel placement packet
             let pixelx = data.readInt32LE(0)
             let pixelz = data.readInt32LE(4)
+
+            if (!isWithinWorldBounds(pixelx, pixelz)) {
+                console.log("Client " + socket.client.clientid + " tried to place pixel outwith world size of " + worldSize + ", position " + pixelx + ", " + pixelz)
+                break;
+            }
+
             let pixelid = data.readInt32LE(8)
             playerPlacedPixel(pixelx, pixelz, pixelid)
+            console.log(socket.client.clientid + " placed pixel at " + pixelx + ", " + pixelz + " in colour " + pixelid)
             break
         case 8:
             // Pixel removal packet
             let rpixelx = data.readInt32LE(0)
             let rpixelz = data.readInt32LE(4)
+
+            if (!isWithinWorldBounds(rpixelx, rpixelz)) {
+                console.log("Client " + socket.client.clientid + " tried to place pixel outwith world size of " + worldSize + ", position " + rpixelx + ", " + rpixelz)
+                break;
+            }
             playerRemovedPixel(rpixelx, rpixelz)
             break
         case 9:
@@ -313,40 +340,6 @@ function shouldAcceptClient(clientid) {
 
 
 
-function chunkUpdateTick() {
-    /*
-    for (clientid in clients) {
-        let client = clients[clientid]
-        if (Object.keys(client.loadedChunkPositions).length == 0) {
-            console.log("client pos " + JSON.stringify(client.position))
-            newChunk = getChunkAtPosition({x: client.position.x, y: client.position.y})
-            sendChunkPacket(newChunk, client)
-        }
-
-        let iterationCount = 0 // To stop it from inifnitely recurring
-        for (chunkId in client.loadedChunkPositions) {
-            iterationCount++
-            if (iterationCount > 50) {
-                client.loadedChunkPositions = {}
-                break
-            }
-            let chunkPosition = client.loadedChunkPositions[chunkId]
-
-            let rightPosition = {x: chunkPosition.x + chunkSize, y: chunkPosition.y} 
-            let leftPosition = {x: chunkPosition.x - chunkSize, y: chunkPosition.y} 
-            let topPosition = {x: chunkPosition.x, y: chunkPosition.y + chunkSize} 
-            let bottomPosition = {x: chunkPosition.x, y: chunkPosition.y - chunkSize} 
-            
-            // Only send update of chunk if direction is not already loaded and within view and dirty
-            if (!(rightPosition.x + "," + rightPosition.y in client.loadedChunkPositions) && isChunkWithinViewingArea(client, rightPosition)) sendChunkPacketIfDirty(getChunkAtPosition(rightPosition), client)
-            if (!(leftPosition.x + "," + leftPosition.y in client.loadedChunkPositions) && isChunkWithinViewingArea(client, leftPosition)) sendChunkPacketIfDirty(getChunkAtPosition(leftPosition), client)
-            if (!(topPosition.x + "," + topPosition.y in client.loadedChunkPositions) && isChunkWithinViewingArea(client, topPosition)) sendChunkPacketIfDirty(getChunkAtPosition(topPosition), client)
-            if (!(bottomPosition.x + "," + bottomPosition.y in client.loadedChunkPositions) && isChunkWithinViewingArea(client, bottomPosition)) sendChunkPacketIfDirty(getChunkAtPosition(bottomPosition), client)
-
-            // TODO: Chunk has a "needupdate" or "dirty" flag so resends aren't done
-        }
-    }*/
-}
 
 function getChunkAtPosition(position) {
     // Try and get chunk from memory, otherwise load from file
@@ -385,20 +378,22 @@ function broadcastChunkPacket(chunk) {
 }
 
 function sendChunkPacket(chunk, client) {
+    console.log("Sending chunk " + chunk.x + " : " + chunk.y + " with " + Object.keys(chunk.pixels).length + " pixels")
     // If chunk has no pixel data just send a blank chunk packet
     if (Object.keys(chunk.pixels).length == 0) {
-        let emptyChunkPacket = new Buffer(5)
+        let emptyChunkPacket = new Buffer(9)
         emptyChunkPacket.writeInt8(0x05, 0)
-        emptyChunkPacket.writeInt16LE(chunk.x, 1)
-        emptyChunkPacket.writeInt16LE(chunk.y, 3)
+        emptyChunkPacket.writeInt32LE(chunk.x, 1)
+        emptyChunkPacket.writeInt32LE(chunk.y, 5)
+    
         client.socket.write(emptyChunkPacket)
     } else {
         // Otherwise send all the pixels
-        let chunkPacket = new Buffer(5 + (chunkSize * chunkSize))
+        let chunkPacket = new Buffer(9 + (chunkSize * chunkSize))
         chunkPacket.writeInt8(0x09, 0)
-        chunkPacket.writeInt16LE(chunk.x, 1)
-        chunkPacket.writeInt16LE(chunk.y, 3)
-        let byteCount = 5
+        chunkPacket.writeInt32LE(chunk.x, 1)
+        chunkPacket.writeInt32LE(chunk.y, 5)
+        let byteCount = 9
 
         for (let x = 0; x < chunkSize; x++) {
             for (let y = 0; y < chunkSize; y++) {
@@ -420,39 +415,25 @@ function sendChunkPacket(chunk, client) {
     // Floating point ambiguity is not a problem as this will always be a whole number
     client.loadedChunkPositions[chunk.x + "," + chunk.y] = chunk
 }
-/*
-function sendInitialChunks(client) {
-    let chunksSoFar = []
-
-    let initialChunkPosition = getNearestChunkTo(client.position)
-
-    chunksSoFar.push(new Chunk(initialChunkPosition.x, initialChunkPosition.y))
-
-    rightPosition = chunk.transform.position + new Vector3(chunkPlaneSize, 0, 0);
-    leftPosition = chunk.transform.position + new Vector3(-chunkPlaneSize, 0, 0);
-    topPosition = chunk.transform.position + new Vector3(0, 0, chunkPlaneSize);
-    bottomPosition = chunk.transform.position + new Vector3(0, 0, -chunkPlaneSize);
-
-    if (GetChunkAtPosition(rightPosition) == null && IsChunkWithinViewingArea(rightPosition)) CreateChunk(rightPosition);
-    if (GetChunkAtPosition(leftPosition) == null && IsChunkWithinViewingArea(leftPosition)) CreateChunk(leftPosition);
-    if (GetChunkAtPosition(topPosition) == null && IsChunkWithinViewingArea(topPosition)) CreateChunk(topPosition);
-    if (GetChunkAtPosition(bottomPosition) == null && IsChunkWithinViewingArea(bottomPosition)) CreateChunk(bottomPosition);
-
-
-}*/
 
 
 function playerPlacedPixel(x, y, colour) {
     let chunkPosition = getNearestChunkTo({x: x, y: y})
+    if (!isWithinWorldBounds(chunkPosition.x, chunkPosition.y)) return
     let chunk = getChunkAtPosition(chunkPosition)
 
     let relativePixelPosition = getRelativePixelPos({x: x, y: y}, chunkPosition)
     chunk.pixels[relativePixelPosition.x + "," + relativePixelPosition.y] = colour
+
+    for (pixelKey in chunk.pixels) {
+        console.log(pixelKey + ": " + chunk.pixels[pixelKey])
+    }
     broadcastChunkPacket(chunk)
 }
 
 function playerRemovedPixel(x, y) {
     let chunkPosition = getNearestChunkTo({x: x, y: y})
+    if (!isWithinWorldBounds(chunkPosition.x, chunkPosition.y)) return
     let chunk = getChunkAtPosition(chunkPosition)
 
     let relativePixelPosition = getRelativePixelPos({x: x, y: y}, chunkPosition)

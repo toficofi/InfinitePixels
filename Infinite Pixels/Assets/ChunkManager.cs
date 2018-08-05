@@ -111,8 +111,8 @@ public class ChunkManager : MonoBehaviour {
 
     public void LoadBlankChunkFromNetwork(BinaryReader reader)
     {
-        int chunkx = reader.ReadInt16();
-        int chunky = reader.ReadInt16();
+        int chunkx = reader.ReadInt32();
+        int chunky = reader.ReadInt32();
 
         chunksNeedingUpdate.Add(new ChunkUpdate(chunkx, chunky));
 
@@ -149,7 +149,8 @@ public class ChunkManager : MonoBehaviour {
                 if (pixelColourAtPosition > 0) // Not empty
                 {
                     positionToCheck = chunkWisePixelPosToWorld(positionToCheck, new Vector3(update.x, 0, update.z));
-                    this.GetComponent<PixelManager>().CreatePixelAtPosition(positionToCheck, this.GetComponent<ColourManager>().ColorToMaterial(pixelColourAtPosition));
+                    Debug.Log("Got pixel colour " + pixelColourAtPosition);
+                    this.GetComponent<PixelManager>().CreatePixelAtPosition(positionToCheck, this.GetComponent<ColourManager>().ColorToMaterial(pixelColourAtPosition-1));
                 }
             }
         }
@@ -166,8 +167,8 @@ public class ChunkManager : MonoBehaviour {
 
     public void LoadChunkFromNetwork(BinaryReader reader)
     {
-        int chunkx = reader.ReadInt16();
-        int chunky = reader.ReadInt16();
+        int chunkx = reader.ReadInt32();
+        int chunky = reader.ReadInt32();
 
 
         chunksNeedingUpdate.Add(new ChunkUpdate(chunkx, chunky, reader));
@@ -312,6 +313,8 @@ public class ChunkManager : MonoBehaviour {
             return;
         }
 
+        if (!networkManager.IsPositionWithinWorldBounds(selector.transform.position)) return;
+        
         GameObject currentChunk = GetChunkAtPosition(selector.transform.position);
         if (currentChunk == null) currentChunk = CreateChunkUnderPlayer();
 
@@ -326,6 +329,9 @@ public class ChunkManager : MonoBehaviour {
             for (float z = startingZ; z < currentChunk.transform.position.z + radius; z += chunkPlaneSize)
             {
                 Vector3 loc = new Vector3(x, 0, z);
+
+                // Don't request chunks outside world size
+                if (!networkManager.IsPositionWithinWorldBounds(loc)) continue;
 
                 GameObject chunkAlreadyAtPosition = GetChunkFromExactPosition(loc);
                 if (chunkAlreadyAtPosition != null)

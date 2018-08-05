@@ -42,12 +42,52 @@ public class SelectorController : MonoBehaviour {
         tvDude.GetComponent<TVDudeScript>().ChangeColour(color);
     }
 
+    public void ChangePosition(Vector3 position)
+    {
+        if (playerSelector)
+        {
+            cameras.transform.position = position - vectorFromCamera;
+            this.transform.position = position;
+        }
+    }
+    
+    // Clamps the given position to the world size. Returns true if a clamp was required and false otherwise.
+    bool ClampPositionWithinWorldBounds(ref Vector3 position)
+    {
+        bool hadToClamp = false;
+        if (position.x > networkManager.worldSize) {
+            position.x = networkManager.worldSize;
+            hadToClamp = true;
+        }
+        if (position.x < -networkManager.worldSize) {
+            position.x = -networkManager.worldSize;
+            hadToClamp = true;
+        }
+        if (position.z > networkManager.worldSize) {
+            position.z = networkManager.worldSize;
+            hadToClamp = true;
+        }
+        if (position.z < -networkManager.worldSize) {
+            position.z = -networkManager.worldSize;
+            hadToClamp = true;
+        }
+
+        return hadToClamp;
+    }
+
 	// Update is called once per frame
 	void Update () {
         // If this is the client player selector, send position update after calculating
         if (playerSelector)
         {
             Vector3 exactPosition = cameras.transform.position + vectorFromCamera;
+            if (ClampPositionWithinWorldBounds(ref exactPosition))
+            {
+                Debug.Log("Clamped position: " + exactPosition);
+                // If we had to clamp within the world bounds, force selector to that position and the camera too
+                this.transform.position = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
+                cameras.transform.position = exactPosition - vectorFromCamera;
+            }
 
             // Move the selector smoothly if still moving, otherwise snap to the grid
             if (dragScript.IsResting()) this.transform.position = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
@@ -83,6 +123,7 @@ public class SelectorController : MonoBehaviour {
     public void PlacePixel()
     {
         if (velocity.magnitude > 0) return;
+        if (!networkManager.IsPositionWithinWorldBounds(this.transform.position)) return;
         PlaySpawnEffect();
         GameObject pixel = this.pixelManager.GetPixelAtPosition(this.transform.position);
         Debug.Log("Placing pixel at " + this.transform.position);

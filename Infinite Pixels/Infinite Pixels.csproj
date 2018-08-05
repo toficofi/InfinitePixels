@@ -290,6 +290,7 @@
     <Compile Include="Assets\CameraScript.cs" />
     <Compile Include="Assets\ChunkManager.cs" />
     <Compile Include="Assets\ChunkScript.cs" />
+    <Compile Include="Assets\ClipboardHelper.cs" />
     <Compile Include="Assets\ColourManager.cs" />
     <Compile Include="Assets\DragScript.cs" />
     <Compile Include="Assets\InputFieldTextFitter.cs" />

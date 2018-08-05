@@ -21,7 +21,7 @@ public class PixelManager : MonoBehaviour {
     public void PlacePixel(Vector3 position)
     {
         CreatePixelAtPosition(position, colourManager.ColorToMaterial(colourManager.selectedColour));
-        networkManager.SendPixelPlaceBroadcast(position, colourManager.selectedColour);
+        networkManager.SendPixelPlaceBroadcast(position, colourManager.selectedColour + 1);
         GameObject chunk = chunkManager.GetChunkAtPosition(position);
 
         // Trigger waiting for a reload of the chunk
@@ -40,6 +40,7 @@ public class PixelManager : MonoBehaviour {
         // To center the pixel
         position += new Vector3(0.5f, 0f, 0.5f);
         GameObject chunk = chunkManager.GetChunkAtPosition(position);
+        if (chunk == null) return;
         GameObject pixelCubeClone = Instantiate<GameObject>(pixelCube, position, pixelCube.transform.localRotation);
         pixelCubeClone.transform.GetChild(0).GetComponent<TextMesh>().text = position.x + ", " + position.y + ", " + position.z;
         pixelCubeClone.transform.SetParent(chunk.transform);

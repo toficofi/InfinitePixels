@@ -25,6 +25,7 @@ struct OtherPlayerInfoUpdate
 
 public class NetworkManagerScript : MonoBehaviour
 {
+    public int worldSize;
     public string host;
     public short port;
     bool shouldRun = true;
@@ -74,6 +75,16 @@ public class NetworkManagerScript : MonoBehaviour
         StartCoroutine(SendPlayerInfoUpdate());
         UpdateConnectingStatus("CONNECTING");
         ConnectToTcpServer();
+    }
+
+    public bool IsPositionWithinWorldBounds(Vector3 position)
+    {
+        if (position.x > worldSize) return false;
+        if (position.x < -worldSize) return false;
+        if (position.z > worldSize) return false;
+        if (position.z < -worldSize) return false;
+
+        return true;
     }
 
     void UpdateConnectingStatus(string status)
@@ -434,8 +445,9 @@ public class NetworkManagerScript : MonoBehaviour
                 chunkManager.LoadBlankChunkFromNetwork(reader);
                 break;
             case 0x09:
+                Debug.Log("Got chunk packet");
                 // Copy the chunk data into memory to be read on the main thread
-                BinaryReader chunkDataCopy = CopyBytesFromNetworkToMemory(reader, ((int)chunkManager.chunkPlaneSize * (int)chunkManager.chunkPlaneSize) + 4);
+                BinaryReader chunkDataCopy = CopyBytesFromNetworkToMemory(reader, ((int)chunkManager.chunkPlaneSize * (int)chunkManager.chunkPlaneSize) + 8);
                 chunkManager.LoadChunkFromNetwork(chunkDataCopy);
                 break;
             case 0xA:
