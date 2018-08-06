@@ -1,5 +1,6 @@
 Android
 SceneListBegin?
+Assets/MainMenu.unity
 Assets/Main.unity
 SceneListEnd?
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Timeline.dll:UnityEngine.Timeline.ActivationPlayableAsset
@@ -119,7 +120,7 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
-df1fd198c35e10a6d7a56c2fc1833e36 Assembly-CSharp.dll:.NetworkManagerScript
+dba9bce97039c7667df255d6b0b6248e Assembly-CSharp.dll:.NetworkManagerScript
 205965134a5874db410d674ebdf33ba7 Assembly-CSharp.dll:.ExampleWheelController
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.CallbackExecutor
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Advertisements.dll:UnityEngine.Advertisements.Editor.Placeholder
@@ -151,11 +152,12 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
-c603b1fd00de2451f868e160e741787b Assembly-CSharp.dll:.SelectorController
+c98b505835a106a1bd3749c654204416 Assembly-CSharp.dll:.SelectorController
 f671a42aea5f34fec6a4450a3668c615 Assembly-CSharp.dll:UnityEngine.PostProcessing.PostProcessingProfile
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 de7ad6b2cd4a9caf2fac40fd558ae873 Assembly-CSharp.dll:.TVDudeScript
-2d487df5d77cbacfeaaed00324bc413f Assembly-CSharp.dll:.TeleportMenuScript
+616deabce78ed280378db680f3c325be Assembly-CSharp.dll:.TeleportMenuScript
 484ab3aa9c15ac2f0784b88cbee12b5e Assembly-CSharp.dll:.CameraFollow
 bea1b6b14c2082cf7e53e9a10938a99d Assembly-CSharp.dll:.DragScript
 29b0c35388b1ee523ddc269dead46452 Assembly-CSharp.dll:.TextFitter
+05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.MainMenuScript

@@ -38,7 +38,6 @@ public class SwatchContainerSlider : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Debug.Log("Screen width: " + Screen.width);
         colourManager = GameObject.Find("PixelCanvas").GetComponent<ColourManager>();
 
         rect = this.gameObject.GetComponent<RectTransform>();

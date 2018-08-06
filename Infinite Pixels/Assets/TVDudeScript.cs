@@ -78,6 +78,15 @@ public class TVDudeScript : MonoBehaviour {
 
     public void ChangeColour(Color color)
     {
+        float h, s, v = 0;
+        Util.ColorToHSV(color, out h, out s, out v);
+
+        v = 0.8f;
+
+        color = Util.ColorFromHSV(h, s, v);
+
+
+
         //selectorCube.transform.GetChild(0).GetComponent<Light>().color = color;
         monitorLight.GetComponent<Renderer>().material.color = color; // Box covering face
         floatingPixel.GetComponent<Renderer>().material.color = color; // Floating box

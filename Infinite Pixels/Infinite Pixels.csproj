@@ -294,6 +294,7 @@
     <Compile Include="Assets\ColourManager.cs" />
     <Compile Include="Assets\DragScript.cs" />
     <Compile Include="Assets\InputFieldTextFitter.cs" />
+    <Compile Include="Assets\MainMenuScript.cs" />
     <Compile Include="Assets\MenuController.cs" />
     <Compile Include="Assets\NetworkManagerScript.cs" />
     <Compile Include="Assets\PixelManager.cs" />

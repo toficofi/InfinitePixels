@@ -105,22 +105,22 @@ public class MenuController : MonoBehaviour {
 
     public void UnBlurBackground()
     {
-        Debug.Log("UNblurring");
         profile.depthOfField.enabled = false;
         profile.colorGrading.enabled = false;
     }
 
     public void UpdateNameClicked()
     {
-        string newName = nameField.text;
-        if (newName.Length < 0 || newName.Length > 20) return;
+        nameField.Select();
+    }
 
-        newName = newName.Trim();
-        newName = Util.ConvertToASCII(newName);
-        nameField.text = newName;
+    public void SanitizeNameInput()
+    {
+        if (nameField.text.Length == 0) return;
 
-        tvDude.ChangeName(newName);
-        networkManager.currentPlayerName = newName;
+        nameField.text = Util.ConvertToASCII(nameField.text);
+        tvDude.ChangeName(nameField.text);
+        networkManager.currentPlayerName = nameField.text;
     }
 
     public void RandomizeColourClicked()

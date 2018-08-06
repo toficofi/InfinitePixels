@@ -77,7 +77,6 @@ let server = net.createServer((socket) => {
 function readString(data, offset) {
     let stringLength = data.readUInt8(offset)
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
-    console.log("Read string " + string + " length " + stringLength + " at offset " + offset)
     return string
 }
 
@@ -226,7 +225,6 @@ function processPacket(data, socket) {
             playerRemovedPixel(rpixelx, rpixelz)
             break
         case 9:
-            console.log("Player update packet")
             // Player information packet
             let r = data.readFloatLE(0)
             let g = data.readFloatLE(4)
@@ -382,7 +380,6 @@ function broadcastChunkPacket(chunk) {
 }
 
 function sendChunkPacket(chunk, client) {
-    console.log("Sending chunk " + chunk.x + " : " + chunk.y + " with " + Object.keys(chunk.pixels).length + " pixels")
     // If chunk has no pixel data just send a blank chunk packet
     if (Object.keys(chunk.pixels).length == 0) {
         let emptyChunkPacket = new Buffer(9)
@@ -429,9 +426,6 @@ function playerPlacedPixel(x, y, colour) {
     let relativePixelPosition = getRelativePixelPos({x: x, y: y}, chunkPosition)
     chunk.pixels[relativePixelPosition.x + "," + relativePixelPosition.y] = colour
 
-    for (pixelKey in chunk.pixels) {
-        console.log(pixelKey + ": " + chunk.pixels[pixelKey])
-    }
     broadcastChunkPacket(chunk)
 }
 
@@ -527,19 +521,3 @@ function loadChunkAtPosition(position) {
 
      return chunk
 }
-
-/*
-
-/root/InfinitePixels/server.js:144
-                console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
-                                                                                                               ^
-
-TypeError: Cannot read property 'clientid' of undefined
-    at Socket.socket.on (/root/InfinitePixels/server.js:144:112)
-    at emitOne (events.js:96:13)
-    at Socket.emit (events.js:188:7)
-    at readableAddChunk (_stream_readable.js:176:18)
-    at Socket.Readable.push (_stream_readable.js:134:10)
-    at TCP.onread (net.js:547:20)
-
-    */

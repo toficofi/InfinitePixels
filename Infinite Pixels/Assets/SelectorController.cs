@@ -16,6 +16,7 @@ public class SelectorController : MonoBehaviour {
     public float networkCorrectionSpeed = 1f;
     public float networkUpdateFrequency = 10f;
     public Vector3 velocity;
+    public int distanceBeforeTeleporting;
     public float sensitivity;
     public float speedToSwitchToGentleMode;
     public float gentleModeSensitivity;
@@ -106,6 +107,7 @@ public class SelectorController : MonoBehaviour {
 
             // Lerp between client position and network reported position
             transform.position = Vector3.MoveTowards(transform.position, targetPosition,  networkCorrectionSpeed);
+            if (Vector3.Distance(transform.position, targetPosition) > distanceBeforeTeleporting) transform.position = targetPosition;
         }
     }
 

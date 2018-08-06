@@ -149,7 +149,6 @@ public class ChunkManager : MonoBehaviour {
                 if (pixelColourAtPosition > 0) // Not empty
                 {
                     positionToCheck = chunkWisePixelPosToWorld(positionToCheck, new Vector3(update.x, 0, update.z));
-                    Debug.Log("Got pixel colour " + pixelColourAtPosition);
                     this.GetComponent<PixelManager>().CreatePixelAtPosition(positionToCheck, this.GetComponent<ColourManager>().ColorToMaterial(pixelColourAtPosition-1));
                 }
             }
