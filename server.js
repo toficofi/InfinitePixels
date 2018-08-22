@@ -6,7 +6,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = true
+let connectToLocalhost = false
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -136,7 +136,7 @@ function endConnection(socket) {
 
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
-    if (identifier !== 0 && !socket.client) {
+    if (identifier !== 0 && !socket.client) { 
         console.log("Client tried to send packets before authing")
         return
     }
