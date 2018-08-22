@@ -3,12 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.PostProcessing;
 using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour {
-    public PostProcessingProfile profile;
-
+    public GameObject panel;
     public GameObject settingsMenu;
     public GameObject teleportMenu;
 
@@ -99,14 +97,29 @@ public class MenuController : MonoBehaviour {
     
     public void BlurBackground()
     {
+        panel.SetActive(true);
+        // Postprocessing removed for performance reasons
+        /*
         profile.depthOfField.enabled = true;
-        profile.colorGrading.enabled = true;
+
+        ColorGradingModel.Settings currentSettings = profile.colorGrading.settings;
+        currentSettings.basic.postExposure = -1;
+
+        profile.colorGrading.settings = currentSettings;
+        //profile.colorGrading.enabled = true;*/
     }
 
     public void UnBlurBackground()
     {
+        panel.SetActive(false);
+        /*
         profile.depthOfField.enabled = false;
-        profile.colorGrading.enabled = false;
+        //profile.colorGrading.enabled = false;
+
+        ColorGradingModel.Settings currentSettings = profile.colorGrading.settings;
+        currentSettings.basic.postExposure = 1.9f;
+
+        profile.colorGrading.settings = currentSettings;*/
     }
 
     public void UpdateNameClicked()
