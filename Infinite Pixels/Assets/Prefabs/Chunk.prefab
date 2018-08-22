@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33822595444360436}
   - component: {fileID: 23538992814307492}
   - component: {fileID: 114312623899494962}
+  - component: {fileID: 65450683139792226}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Chunk
@@ -84,6 +85,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1008621032180202}
   m_Mesh: {fileID: 4300000, guid: 0a58b7977b4892e4cbb65dd2b5db896d, type: 3}
+--- !u!65 &65450683139792226
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1008621032180202}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 16, y: 16.000004, z: 0.20000005}
+  m_Center: {x: 0, y: 0, z: 0.100000024}
 --- !u!114 &114312623899494962
 MonoBehaviour:
   m_ObjectHideFlags: 1

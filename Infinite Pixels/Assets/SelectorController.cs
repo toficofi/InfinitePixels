@@ -27,7 +27,10 @@ public class SelectorController : MonoBehaviour {
     // Only used in network-controlled mode
     public Vector3 targetPosition;
 
-
+    public void Awake()
+    {
+        Application.targetFrameRate = 300;
+    }
 
     // Use this for initialization
     void Start () {
