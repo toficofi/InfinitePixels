@@ -24,6 +24,8 @@ public class SelectorController : MonoBehaviour {
     public GameObject spawnEffect;
     public GameObject cameras;
 
+    public float secondsSinceLastUpdate = 0;
+
     // Only used in network-controlled mode
     public Vector3 targetPosition;
 

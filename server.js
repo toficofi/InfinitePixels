@@ -6,7 +6,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = false
+let connectToLocalhost = true
 console.log("Infinite Pixels server loading...")
 if (!fs.existsSync("world")) fs.mkdirSync("world")
 
@@ -40,7 +40,7 @@ let server = net.createServer((socket) => {
     socket.on("close", () => {
         console.log("DISCONNECTED: " + socket.remoteAddress + ":" + socket.remotePort)
         if (socket.client) {
-            broadcastClientQuit(socket.client.clientid)
+            //broadcastClientQuit(socket.client.clientid)
             delete clients[socket.client.clientid]
         }
     })
@@ -64,7 +64,8 @@ let server = net.createServer((socket) => {
             break;
     
           default:
-            console.log("Got unknown error: " + er.code)
+            console.log("Got unknown error: ")
+            console.log(er)
             break;
             }
         }

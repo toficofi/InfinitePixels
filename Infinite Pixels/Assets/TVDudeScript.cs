@@ -93,9 +93,9 @@ public class TVDudeScript : MonoBehaviour {
         //tvDude.transform.GetChild(0).GetComponent<Light>().color = color; // Light
 
         Material boxCoverMat = monitorLight.GetComponent<Renderer>().material;
-        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
+        boxCoverMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(50f));
 
         Material floatingBoxMat = floatingPixel.GetComponent<Renderer>().material;
-        floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(20f));
+        floatingBoxMat.SetColor("_EmissionColor", color * Mathf.LinearToGammaSpace(50f));
     }
 }

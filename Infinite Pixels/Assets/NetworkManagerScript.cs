@@ -25,6 +25,7 @@ struct OtherPlayerInfoUpdate
 
 public class NetworkManagerScript : MonoBehaviour
 {
+    public Dictionary<string, GameObject> players = new Dictionary<string, GameObject>();
     public int worldSize;
     public string host;
     public short port;
@@ -60,6 +61,7 @@ public class NetworkManagerScript : MonoBehaviour
     #region private members 	
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
+    public float secondsBeforeOtherPlayerTimeout;
     #endregion
     // Use this for initialization 	
     void Start()
@@ -73,6 +75,7 @@ public class NetworkManagerScript : MonoBehaviour
         shouldDisplayConnectingPanel = true;
         StartCoroutine(CheckIfSocketAlive());
         StartCoroutine(SendPlayerInfoUpdate());
+        StartCoroutine(CheckIfOtherPlayersHaveTimedOut());
         UpdateConnectingStatus("CONNECTING");
         ConnectToTcpServer();
     }
@@ -125,6 +128,30 @@ public class NetworkManagerScript : MonoBehaviour
 
             currentMemoryStream.WriteTo(currentStream);
             currentMemoryStream.Flush();
+        }
+    }
+
+    public IEnumerator CheckIfOtherPlayersHaveTimedOut()
+    {
+        while (this.isActiveAndEnabled)
+        {
+            yield return new WaitForSeconds(secondsBetweenInfoUpdate);
+
+            List<string> otherIdsToRemove = new List<string>();
+            foreach (KeyValuePair<string, GameObject> player in players)
+            {
+                SelectorController controller = player.Value.GetComponent<SelectorController>();
+                controller.secondsSinceLastUpdate += secondsBetweenInfoUpdate;
+                if (controller.secondsSinceLastUpdate >= secondsBeforeOtherPlayerTimeout) otherIdsToRemove.Add(player.Key);
+            }
+
+            foreach (string id in otherIdsToRemove)
+            {
+                GameObject otherPlayer = players[id];
+                Destroy(otherPlayer.GetComponent<SelectorController>().tvDude);
+                Destroy(otherPlayer);
+                players.Remove(id);
+            }
         }
     }
 
@@ -489,26 +516,33 @@ public class NetworkManagerScript : MonoBehaviour
         clientQuits.Add(clientQuitId);
     }
 
-    // If updateInfo is true, then we're only updating the player name and colour, not the position
+    // Process a player update packet
     public void ProcessUpdatePosition(string otherid, Vector2 position, Vector2 velocity)
     {
-        GameObject otherPlayer = GameObject.Find(otherid);
-        if (otherPlayer == null)
+        GameObject otherPlayer;
+
+        if (!players.ContainsKey(otherid))
         {
             Debug.Log("New player nearby!");
             otherPlayer = Instantiate<GameObject>(otherPlayerPrefab);
             otherPlayer.name = otherid;
+
+            players.Add(otherid, otherPlayer);
 
             GameObject otherTvDude = Instantiate<GameObject>(tvDudePrefab);
             otherPlayer.GetComponent<SelectorController>().tvDude = otherTvDude;
             otherTvDude.transform.position = new Vector3(position.x, 0, position.y);
             otherTvDude.GetComponent<TVDudeScript>().target = otherPlayer.transform;
 
+        } else
+        {
+            otherPlayer = players[otherid];
         }
 
         SelectorController controller = otherPlayer.GetComponent<SelectorController>();
 
         controller.playerSelector = false;
+        controller.secondsSinceLastUpdate = 0;
 
         controller.velocity = new Vector3(velocity.x, 0, velocity.y);
         controller.targetPosition = new Vector3(position.x, 0, position.y);

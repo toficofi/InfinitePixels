@@ -9,6 +9,7 @@ public class MenuController : MonoBehaviour {
     public GameObject panel;
     public GameObject settingsMenu;
     public GameObject teleportMenu;
+    public GameObject reportMenu;
 
     public bool menuIsOpen = false;
     public NetworkManagerScript networkManager;
@@ -57,6 +58,29 @@ public class MenuController : MonoBehaviour {
         randomizeColourButton.GetComponent<Image>().color = tvDude.colour;
     }
 
+    public void ClickReportButton()
+    {
+        // If menu is already open, clicking button closes the menu
+        if (menuIsOpen)
+        {
+            CloseMenu();
+            return;
+        }
+
+        BlurBackground();
+        reportButton.SetActive(true);
+        menuIsOpen = true;
+
+        reportMenu.SetActive(true);
+
+        zoomIn.SetActive(false);
+        zoomOut.SetActive(false);
+        teleportButton.SetActive(false);
+        settingsButton.SetActive(false);
+
+        swatches.transform.localScale = new Vector3(0, 0, 0);
+    }
+
     public void ClickTeleportButton()
     {
         // If menu is already open, clicking button closes the menu
@@ -92,6 +116,7 @@ public class MenuController : MonoBehaviour {
 
         settingsMenu.SetActive(false);
         teleportMenu.SetActive(false);
+        reportMenu.SetActive(false);
         menuIsOpen = false;
     }
     
