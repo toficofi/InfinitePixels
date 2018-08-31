@@ -111,6 +111,9 @@ public class SelectorController : MonoBehaviour {
             if (Vector3.Distance(this.transform.position, lastPosition) > distanceBeforePausingUpdates)
             {
                 networkManager.SendPositionUpdate(this.transform.position, velocity);
+            } else
+            {
+                if (Time.frameCount % 100 == 0) networkManager.SendPositionUpdate(this.transform.position, velocity);
             }
 
             lastPosition = this.transform.position;

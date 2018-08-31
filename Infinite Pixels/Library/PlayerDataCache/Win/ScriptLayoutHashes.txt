@@ -25,6 +25,7 @@ d3f182b5602abbd42c426de8a39acd23 Assembly-CSharp.dll:.ChunkManager
 211159bc118f65ac941f7071bd9358eb Assembly-CSharp.dll:.ColourManager
 bf3594f76f028cd45c36263f27c2f087 Assembly-CSharp.dll:.CameraDataScript
 b14b4630cc47b6e9ea8a644551a6a8cc Unity.TextMeshPro.dll:TMPro.TMP_Text
+c6d1a3ed271ed64236c8ec390948a540 Assembly-CSharp.dll:.BackgroundMusicScript
 53cefe5d98cadefbab750835e70b89c0 UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 486cd95c82d8305219c352c06b776e1f UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 da2091a04d360891450faf16cdf621f1 UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -184,4 +185,3 @@ e04611b8715e6833d2bd7010fc6be10b Unity.TextMeshPro.dll:TMPro.TMP_StyleSheet
 93307bd34e39d73fd24e00ec39c25a91 Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
 d7cc2c63b74ca4aa96ac5ff72a22595c Assembly-CSharp.dll:.DragScript
 584e567292b656cf068a0aeeb0db02df Assembly-CSharp.dll:.TextFitter
-c6d1a3ed271ed64236c8ec390948a540 Assembly-CSharp.dll:.BackgroundMusicScript

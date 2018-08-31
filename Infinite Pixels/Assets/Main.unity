@@ -1573,7 +1573,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 560308951}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &560308955
 Behaviour:
   m_ObjectHideFlags: 0
@@ -2280,8 +2280,23 @@ Prefab:
       objectReference: {fileID: 263147386}
     - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
         type: 2}
-      propertyPath: m_Volume
-      value: 0.5
+      propertyPath: BypassEffects
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
+        type: 2}
+      propertyPath: MinDistance
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
+        type: 2}
+      propertyPath: MaxDistance
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
+        type: 2}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
@@ -2907,7 +2922,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1072488022}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &1072488024
 Behaviour:
   m_ObjectHideFlags: 0
@@ -3227,7 +3242,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1098921167}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &1098921171
 Behaviour:
   m_ObjectHideFlags: 0
@@ -3325,7 +3340,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1141932085}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &1141932089
 Behaviour:
   m_ObjectHideFlags: 0
@@ -4125,7 +4140,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1442792746}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &1442792750
 Behaviour:
   m_ObjectHideFlags: 0
@@ -6006,7 +6021,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2128638048}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!124 &2128638052
 Behaviour:
   m_ObjectHideFlags: 0
