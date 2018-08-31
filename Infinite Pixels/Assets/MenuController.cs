@@ -10,6 +10,7 @@ public class MenuController : MonoBehaviour {
     public GameObject settingsMenu;
     public GameObject teleportMenu;
     public GameObject reportMenu;
+    public GameObject tutorialMenu;
 
     public bool menuIsOpen = false;
     public NetworkManagerScript networkManager;
@@ -42,6 +43,11 @@ public class MenuController : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void TutorialClicked()
+    {
+        tutorialMenu.SetActive(false);
+    }
 
     public void PlayClickSound()
     {
