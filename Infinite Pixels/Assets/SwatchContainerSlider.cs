@@ -143,7 +143,7 @@ public class SwatchContainerSlider : MonoBehaviour {
             }
         }
 
-        audioSource.volume = velocity.magnitude / 100f;
+        audioSource.volume = velocity.magnitude / 50f;
 
     }
 

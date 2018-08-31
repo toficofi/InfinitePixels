@@ -32,5 +32,6 @@ public class MainMenuScript : MonoBehaviour {
     public void CreditsButtonClicked()
     {
         PlayClickSound();
+        Application.OpenURL("http://unity3d.com/");
     }
 }
