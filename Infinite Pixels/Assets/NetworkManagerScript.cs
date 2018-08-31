@@ -318,13 +318,13 @@ public class NetworkManagerScript : MonoBehaviour
     }
 
     public void SocketDisconnected() {
-        socketConnection.Close();
+        if (socketConnection != null) socketConnection.Close();
         shouldDisplayConnectingPanel = true;
         UpdateConnectingStatus("RECONNECTING");
         this.isConnected = false;
         waitingForReconnect = true;
         tryingForReconnect = false;
-        clientReceiveThread.Abort();
+        if (clientReceiveThread != null) clientReceiveThread.Abort();
     }
 
 

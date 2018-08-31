@@ -1754,6 +1754,7 @@ GameObject:
   - component: {fileID: 574109122}
   - component: {fileID: 574109124}
   - component: {fileID: 574109123}
+  - component: {fileID: 574109125}
   m_Layer: 5
   m_Name: TutorialScreen
   m_TagString: Untagged
@@ -1820,6 +1821,36 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 574109121}
   m_CullTransparentMesh: 0
+--- !u!114 &574109125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 574109121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1862395651, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1333372526}
+          m_MethodName: TutorialClicked
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
+        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  delegates: []
 --- !u!1 &576931733
 GameObject:
   m_ObjectHideFlags: 0
@@ -4398,6 +4429,7 @@ MonoBehaviour:
   settingsMenu: {fileID: 9254554}
   teleportMenu: {fileID: 803098085}
   reportMenu: {fileID: 770497456}
+  tutorialMenu: {fileID: 574109121}
   menuIsOpen: 0
   networkManager: {fileID: 1945849245}
   zoomIn: {fileID: 2111701638}
@@ -5704,7 +5736,7 @@ MonoBehaviour:
   tvDudePrefab: {fileID: 1557582353078564, guid: 39364e7c75e50b348b226a195cd28eb2,
     type: 2}
   tvDude: {fileID: 78067930}
-  connectToLocalhost: 1
+  connectToLocalhost: 0
   currentPlayerName: 
   menuController: {fileID: 1333372526}
   colourManager: {fileID: 192004321}
