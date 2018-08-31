@@ -53,6 +53,14 @@ public class ChunkManager : MonoBehaviour {
         chunks.Clear();
     }
 
+    public void ReloadAllChunks()
+    {
+        foreach (KeyValuePair<string, GameObject> chunk in chunks)
+        {
+            chunk.Value.GetComponent<ChunkScript>().loaded = false;
+        }
+    }
+
     public GameObject CreateChunkUnderPlayer()
     {
         return CreateChunk(SnapPositionToChunk(selector.transform.position));
@@ -308,7 +316,7 @@ public class ChunkManager : MonoBehaviour {
 
         if (!networkManager.isConnected)
         {
-            if (chunks.Count > 0) ClearChunks();
+            //if (chunks.Count > 0) ClearChunks();
             return;
         }
 

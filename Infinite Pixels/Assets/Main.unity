@@ -2142,7 +2142,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -0.629
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
       propertyPath: m_LocalPosition.y
@@ -2150,7 +2150,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 1.868
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2182,6 +2182,59 @@ Prefab:
       propertyPath: cameraScript
       value: 
       objectReference: {fileID: 263147386}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.596
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0.003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.091277726
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.09127773
+      objectReference: {fileID: 0}
+    - target: {fileID: 4885638269354976, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.09127773
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559843298129230, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.030525137
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 6.8832645
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 6.8832684
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483563248433402, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 6.8832684
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559843298129230, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0.0037841015
+      objectReference: {fileID: 0}
+    - target: {fileID: 4559843298129230, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -8.402406e-19
+      objectReference: {fileID: 0}
+    - target: {fileID: 95732523112440582, guid: 39364e7c75e50b348b226a195cd28eb2,
+        type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
   m_IsPrefabAsset: 0
@@ -2761,6 +2814,11 @@ Prefab:
         type: 2}
       propertyPath: distanceBeforeTeleporting
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114285873580406930, guid: 3c5258490c61af14b91cf40e43410a35,
+        type: 2}
+      propertyPath: distanceBeforePausingUpdates
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c5258490c61af14b91cf40e43410a35, type: 2}
@@ -4908,11 +4966,12 @@ MonoBehaviour:
   tvDudePrefab: {fileID: 1557582353078564, guid: 39364e7c75e50b348b226a195cd28eb2,
     type: 2}
   tvDude: {fileID: 78067930}
-  connectToLocalhost: 0
+  connectToLocalhost: 1
   currentPlayerName: 
   menuController: {fileID: 1333372526}
   colourManager: {fileID: 192004321}
   secondsBetweenInfoUpdate: 5
+  secondsBeforeOtherPlayerTimeout: 10
 --- !u!4 &1945849246
 Transform:
   m_ObjectHideFlags: 0

@@ -295,6 +295,7 @@ public class NetworkManagerScript : MonoBehaviour
                 clientReceiveThread = new Thread(new ThreadStart(ListenForData));
                 clientReceiveThread.IsBackground = true;
                 clientReceiveThread.Start();
+                chunkManager.ReloadAllChunks(); // If this was a reconnect, reload every existing chunk
             }
             catch (Exception e)
             {

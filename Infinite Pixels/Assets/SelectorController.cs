@@ -26,8 +26,10 @@ public class SelectorController : MonoBehaviour {
 
     public float secondsSinceLastUpdate = 0;
 
+    private Vector3 lastPosition = new Vector3(0, 0, 0);
     // Only used in network-controlled mode
     public Vector3 targetPosition;
+    public float distanceBeforePausingUpdates;
 
     public void Awake()
     {
@@ -95,11 +97,17 @@ public class SelectorController : MonoBehaviour {
                 cameras.transform.position = exactPosition - vectorFromCamera;
             }
 
+
             // Move the selector smoothly if still moving, otherwise snap to the grid
             if (dragScript.IsResting()) this.transform.position = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
-            
+
             // Debug
-            if (Time.frameCount % networkUpdateFrequency == 0) networkManager.SendPositionUpdate(this.transform.position, velocity);
+            if (Vector3.Distance(this.transform.position, lastPosition) > distanceBeforePausingUpdates)
+            {
+                networkManager.SendPositionUpdate(this.transform.position, velocity);
+            }
+
+            lastPosition = this.transform.position;
         } else
         {
             velocity *= drag;
