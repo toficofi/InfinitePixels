@@ -16,11 +16,15 @@ public class TVDudeScript : MonoBehaviour {
     public GameObject nameText;
     public CameraScript cameraScript;
     public Color colour;
+    public float distancePerStep;
 
+    private float distanceSinceLastStep = 0f;
+    private AudioSource audio;
 
     private int speedKeyID;
     // Use this for initialization
     void Start () {
+        audio = this.GetComponent<AudioSource>();
         speedKeyID = Animator.StringToHash("speed");
         cameraScript = GameObject.Find("Cameras").GetComponent<CameraScript>();
         Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f) / 2f;
@@ -34,8 +38,14 @@ public class TVDudeScript : MonoBehaviour {
         this.colour = color;
     }
 
-	// Update is called once per frame
-	void Update () {
+    public void PlayStepSound()
+    {
+        audio.pitch = Random.Range(1f, 1.5f);
+        audio.Play();
+    }
+
+    // Update is called once per frame
+    void Update () {
         Vector3 targetPosition = new Vector3(target.position.x, this.transform.position.y, target.position.z);
         bool shouldMove = true;
 
@@ -58,7 +68,14 @@ public class TVDudeScript : MonoBehaviour {
 
         if (shouldMove) this.transform.position = Vector3.SmoothDamp(this.transform.position, targetPosition, ref followerVelocity, followLooseness);
         this.transform.position = new Vector3(this.transform.position.x, 0, this.transform.position.z);
-        
+
+        distanceSinceLastStep += this.followerVelocity.magnitude;
+        if (distanceSinceLastStep >= distancePerStep)
+        {
+            PlayStepSound();
+            distanceSinceLastStep = 0;
+        }
+
         Camera currentCam = cameraScript.currentCamera;
         OrientToCamera(nameText, currentCam);
     }

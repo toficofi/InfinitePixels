@@ -31,9 +31,14 @@ public class SelectorController : MonoBehaviour {
     public Vector3 targetPosition;
     public float distanceBeforePausingUpdates;
 
+    AudioSource audio;
+
+    public AudioClip pixelPlaceSound;
+    public AudioClip pixelRemoveSound;
+
     public void Awake()
     {
-        Application.targetFrameRate = 300;
+        Application.targetFrameRate = 60;
     }
 
     // Use this for initialization
@@ -41,6 +46,7 @@ public class SelectorController : MonoBehaviour {
         pixelManager = GameObject.Find("PixelCanvas").GetComponent<PixelManager>();
         dragScript = GameObject.Find("DragReciever").GetComponent<DragScript>();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
+        audio = this.GetComponent<AudioSource>();
         if (playerSelector) vectorFromCamera =  this.transform.position - cameras.transform.position;
 	}
 
@@ -135,6 +141,11 @@ public class SelectorController : MonoBehaviour {
         spawnEffect.transform.GetChild(1).GetComponent<ParticleSystem>().Play();
     }
 
+    public void RandomizePitch()
+    {
+        audio.pitch = Random.Range(1f, 1.5f);
+    }
+
     public void PlacePixel()
     {
         if (velocity.magnitude > 0) return;
@@ -142,7 +153,18 @@ public class SelectorController : MonoBehaviour {
         PlaySpawnEffect();
         GameObject pixel = this.pixelManager.GetPixelAtPosition(this.transform.position);
         Debug.Log("Placing pixel at " + this.transform.position);
-        if (pixel == null) this.pixelManager.PlacePixel(this.transform.position);
-        else this.pixelManager.RemovePixel(this.transform.position);
+        if (pixel == null)
+        {
+            this.pixelManager.PlacePixel(this.transform.position);
+            RandomizePitch();
+            audio.PlayOneShot(pixelPlaceSound);
+        }
+        else
+        {
+            this.pixelManager.RemovePixel(this.transform.position);
+            RandomizePitch();
+            audio.PlayOneShot(pixelRemoveSound);
+        }
+
     }
 }

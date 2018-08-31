@@ -26,6 +26,8 @@ public class SwatchContainerSlider : MonoBehaviour {
     GameObject selectedSwatch;
     ColourManager colourManager;
 
+    AudioSource audioSource;
+
     List<GameObject> swatches = new List<GameObject>();
 
     // Target position to lerp the swatch to
@@ -39,6 +41,7 @@ public class SwatchContainerSlider : MonoBehaviour {
     // Use this for initialization
     void Start () {
         colourManager = GameObject.Find("PixelCanvas").GetComponent<ColourManager>();
+        audioSource = this.GetComponent<AudioSource>();
 
         rect = this.gameObject.GetComponent<RectTransform>();
 
@@ -107,8 +110,6 @@ public class SwatchContainerSlider : MonoBehaviour {
         }
 
 
-        
-
         if (mouseDown)
         {
             isMovingToTarget = false;
@@ -142,23 +143,7 @@ public class SwatchContainerSlider : MonoBehaviour {
             }
         }
 
-        /*
-        float screenPositionOfRightSide = rightSwatch.GetComponent<RectTransform>().position.x + swatchPrefabWidth * canvas.scaleFactor;
-        float screenPositionOfLeftSide = leftSwatch.GetComponent<RectTransform>().position.x;
-
-
-        if (screenPositionOfRightSide < Screen.width/2)
-        {
-            float distanceFromRightSideToEdge = Screen.width/2 - screenPositionOfRightSide;
-            velocity.x += distanceFromRightSideToEdge / 10f;
-        }
-
-
-        if (screenPositionOfLeftSide > Screen.width/2)
-        {
-            float distanceFromLeftSideToEdge = screenPositionOfLeftSide - Screen.width/2;
-            velocity.x -= distanceFromLeftSideToEdge / 10f;
-        }*/
+        audioSource.volume = velocity.magnitude / 100f;
 
     }
 

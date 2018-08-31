@@ -21,13 +21,21 @@ public class MenuController : MonoBehaviour {
     public GameObject teleportButton;
     public GameObject swatches;
     public TVDudeScript tvDude;
+    public CameraScript cameraScript;
 
     public InputField nameField;
     public GameObject randomizeColourButton;
 
+    private AudioSource audioSource;
+
+    public AudioClip uiClickSound;
+    public AudioClip teleportSound;
+    public AudioClip zoomOutSound;
+    public AudioClip zoomInSound;
+
 	// Use this for initialization
 	void Start () {
-
+        audioSource = this.GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
@@ -35,8 +43,31 @@ public class MenuController : MonoBehaviour {
 		
 	}
 
+    public void PlayClickSound()
+    {
+        audioSource.PlayOneShot(uiClickSound);
+    }
+
+    public void PlayTeleportSound()
+    {
+        audioSource.PlayOneShot(teleportSound);
+    }
+
+    public void ZoomOutClicked()
+    {
+        audioSource.PlayOneShot(zoomOutSound);
+        cameraScript.IncreaseCameraLevel();
+    }
+
+    public void ZoomInClicked()
+    {
+        audioSource.PlayOneShot(zoomInSound);
+        cameraScript.DecreateCameraLevel();
+    }
+
     public void ClickSettingsButton()
     {
+        PlayClickSound();
         // If menu is already open, clicking button closes the menu
         if (menuIsOpen)
         {
@@ -60,6 +91,7 @@ public class MenuController : MonoBehaviour {
 
     public void ClickReportButton()
     {
+        PlayClickSound();
         // If menu is already open, clicking button closes the menu
         if (menuIsOpen)
         {
@@ -83,6 +115,7 @@ public class MenuController : MonoBehaviour {
 
     public void ClickTeleportButton()
     {
+        PlayClickSound();
         // If menu is already open, clicking button closes the menu
         if (menuIsOpen)
         {
@@ -106,10 +139,11 @@ public class MenuController : MonoBehaviour {
 
     public void CloseMenu()
     {
+        PlayClickSound();
         UnBlurBackground();
         zoomIn.SetActive(true);
         zoomOut.SetActive(true);
-        reportButton.SetActive(true);
+        //reportButton.SetActive(true);
         teleportButton.SetActive(true);
         settingsButton.SetActive(true);
         swatches.transform.localScale = new Vector3(1, 1, 1);
@@ -149,6 +183,7 @@ public class MenuController : MonoBehaviour {
 
     public void UpdateNameClicked()
     {
+        PlayClickSound();
         nameField.Select();
     }
 
@@ -163,6 +198,7 @@ public class MenuController : MonoBehaviour {
 
     public void RandomizeColourClicked()
     {
+        PlayClickSound();
         Color color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f) / 2f;
         color.a = 1;
         tvDude.ChangeTVDudeColour(color);

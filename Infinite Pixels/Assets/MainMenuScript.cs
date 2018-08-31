@@ -4,10 +4,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenuScript : MonoBehaviour {
+    public AudioClip uiClick;
+
+    private AudioSource audio;
+
+    public void PlayClickSound()
+    {
+        audio.PlayOneShot(uiClick);
+    }
 
 	// Use this for initialization
 	void Start () {
-		
+        audio = this.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -17,11 +25,12 @@ public class MainMenuScript : MonoBehaviour {
 
     public void EnterButtonClicked()
     {
+        PlayClickSound();
         SceneManager.LoadScene("Main");
     }
 
     public void CreditsButtonClicked()
     {
-
+        PlayClickSound();
     }
 }

@@ -61,6 +61,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\BackgroundMusicScript.cs" />
     <Compile Include="Assets\CameraDataScript.cs" />
     <Compile Include="Assets\CameraFollow.cs" />
     <Compile Include="Assets\CameraScript.cs" />

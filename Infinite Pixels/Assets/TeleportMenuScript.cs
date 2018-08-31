@@ -22,6 +22,8 @@ public class TeleportMenuScript : MonoBehaviour {
 
     public NetworkManagerScript networkManager;
 
+    public MenuController menuController;
+
     // Use this for initialization
     void Start () {
 		
@@ -76,11 +78,13 @@ public class TeleportMenuScript : MonoBehaviour {
     // Swaps the sign in the button (+ to -, - to +)
     void SwitchSign(Text buttonText)
     {
+        menuController.PlayClickSound();
         buttonText.text = (buttonText.text == "+" ? "-" : "+");
     }
 
     public void CopyButtonClicked()
     {
+        menuController.PlayClickSound();
         int x = Convert.ToInt32(xPos.text);
         int y = Convert.ToInt32(yPos.text);
 
@@ -122,6 +126,7 @@ public class TeleportMenuScript : MonoBehaviour {
 
     public void PasteButtonClicked()
     {
+        menuController.PlayClickSound();
         if (AttemptToParseCoords(ClipboardHelper.clipBoard))
         {
             // Parsed successfully
@@ -133,6 +138,7 @@ public class TeleportMenuScript : MonoBehaviour {
 
     public void TeleportButtonClicked()
     {
+        menuController.PlayTeleportSound();
         int x = Convert.ToInt32(xPosField.text);
         int y = Convert.ToInt32(yPosField.text);
         if (IsXNegated()) x = -x;
