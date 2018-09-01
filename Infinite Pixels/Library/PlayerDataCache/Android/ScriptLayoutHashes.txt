@@ -171,7 +171,7 @@ e1ea12ca952c81d81a9a21fdf34446ed UnityEngine.HoloLens.dll:UnityEngine.EventSyste
 98d69a140ec0084cde3b6a5e09aea295 UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 dfd33ff9ae3ce8d7ca1f22b475ec2387 UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
 aac9c55ae7ba4b95b852a7d9c191acd1 Unity.TextMeshPro.dll:TMPro.TextMeshProUGUI
-8d92d054bd32b8b53aea6a8b6323b0e6 Assembly-CSharp.dll:.SelectorController
+fdc86bede3dfb4236ff36aa32b68b7c1 Assembly-CSharp.dll:.SelectorController
 0a006f3734181ba8b26758f0866152c0 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 486cd95c82d8305219c352c06b776e1f Assembly-CSharp.dll:.NewBehaviourScript
 0a165aa811eb9ad2a15e5ed7783a192d Assembly-CSharp.dll:.TVDudeScript
@@ -183,5 +183,5 @@ e04611b8715e6833d2bd7010fc6be10b Unity.TextMeshPro.dll:TMPro.TMP_StyleSheet
 56135ab8ceed5229e1ce2caab4ae1b4c Assembly-CSharp.dll:.CameraFollow
 012a3a33793d91e0108de6a91f7ffda7 Assembly-CSharp.dll:.MainMenuScript
 93307bd34e39d73fd24e00ec39c25a91 Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
-d7cc2c63b74ca4aa96ac5ff72a22595c Assembly-CSharp.dll:.DragScript
+774d441ec362d071f06a0e0c3d9d6bcd Assembly-CSharp.dll:.DragScript
 584e567292b656cf068a0aeeb0db02df Assembly-CSharp.dll:.TextFitter

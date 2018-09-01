@@ -7,6 +7,8 @@ public class DragScript : MonoBehaviour {
     public float thresholdBeforeClearingDrag;
     bool mouseDown = false;
     public Vector2 lastPosition = new Vector2(0, 0);
+    public Vector2 startPosition = new Vector2(0, 0);
+    public float distanceBeforeDrag;
     public SelectorController selector;
 
 	// Use this for initialization
@@ -25,6 +27,7 @@ public class DragScript : MonoBehaviour {
         if (mouseDown)
         {
             Vector2 delta = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - lastPosition;
+            if (delta.magnitude < 1) delta = new Vector2(0, 0);
             delta.y *= 1.5f; // Compensate for horizontal display
             if (selector.velocity.magnitude < selector.speedToSwitchToGentleMode) delta *= selector.gentleModeSensitivity;
             else delta *= selector.sensitivity;
@@ -47,6 +50,7 @@ public class DragScript : MonoBehaviour {
     {
         lastPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         mouseDown = true;
+        startPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
     }
 
     public void MouseButtonPressed()
@@ -57,6 +61,11 @@ public class DragScript : MonoBehaviour {
     public void MouseButtonUp()
     {
         mouseDown = false;
+        Debug.Log("Delta: " + (startPosition - new Vector2(Input.mousePosition.x, Input.mousePosition.y)).magnitude + " - distance before drag: " + distanceBeforeDrag);
+        if ((startPosition - new Vector2(Input.mousePosition.x, Input.mousePosition.y)).magnitude < distanceBeforeDrag) {
+            
+            selector.PlacePixel();
+        }
     }
 }
 

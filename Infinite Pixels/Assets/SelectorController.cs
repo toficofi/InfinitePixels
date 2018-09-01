@@ -17,6 +17,7 @@ public class SelectorController : MonoBehaviour {
     public float networkUpdateFrequency = 10f;
     public Vector3 velocity;
     public int distanceBeforeTeleporting;
+    public float distanceUntilDrag;
     public float sensitivity;
     public float speedToSwitchToGentleMode;
     public float gentleModeSensitivity;
@@ -151,7 +152,8 @@ public class SelectorController : MonoBehaviour {
 
     public void PlacePixel()
     {
-        if (velocity.magnitude > 0) return;
+        Debug.Log("velocity: " + velocity.magnitude);
+        if (velocity.magnitude > distanceUntilDrag) return;
         if (!networkManager.IsPositionWithinWorldBounds(this.transform.position)) return;
         PlaySpawnEffect();
         GameObject pixel = this.pixelManager.GetPixelAtPosition(this.transform.position);

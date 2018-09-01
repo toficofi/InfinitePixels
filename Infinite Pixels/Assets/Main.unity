@@ -1711,7 +1711,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 560308951}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &560308955
 Behaviour:
   m_ObjectHideFlags: 0
@@ -2592,26 +2592,6 @@ Prefab:
       propertyPath: cameraScript
       value: 
       objectReference: {fileID: 263147386}
-    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
-        type: 2}
-      propertyPath: BypassEffects
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
-        type: 2}
-      propertyPath: MinDistance
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
-        type: 2}
-      propertyPath: MaxDistance
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 82188947104968820, guid: 39364e7c75e50b348b226a195cd28eb2,
-        type: 2}
-      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39364e7c75e50b348b226a195cd28eb2, type: 2}
   m_IsPrefabAsset: 0
@@ -3238,23 +3218,6 @@ MonoBehaviour:
           m_CallState: 2
       m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
         Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  - eventID: 4
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 1041154266}
-          m_MethodName: MouseButtonPressed
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
-        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   delegates: []
 --- !u!114 &1041154266
 MonoBehaviour:
@@ -3270,6 +3233,8 @@ MonoBehaviour:
   cameras: {fileID: 263147384}
   thresholdBeforeClearingDrag: 0.05
   lastPosition: {x: 0, y: 0}
+  startPosition: {x: 0, y: 0}
+  distanceBeforeDrag: 100
   selector: {fileID: 0}
 --- !u!1001 &1058884068
 Prefab:
@@ -3447,7 +3412,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1072488022}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &1072488024
 Behaviour:
   m_ObjectHideFlags: 0
@@ -3767,7 +3732,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1098921167}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &1098921171
 Behaviour:
   m_ObjectHideFlags: 0
@@ -3865,7 +3830,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1141932085}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &1141932089
 Behaviour:
   m_ObjectHideFlags: 0
@@ -4667,7 +4632,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1442792746}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &1442792750
 Behaviour:
   m_ObjectHideFlags: 0
@@ -6617,7 +6582,7 @@ AudioListener:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2128638048}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!124 &2128638052
 Behaviour:
   m_ObjectHideFlags: 0
