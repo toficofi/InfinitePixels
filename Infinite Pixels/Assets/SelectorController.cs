@@ -95,6 +95,7 @@ public class SelectorController : MonoBehaviour {
         // If this is the client player selector, send position update after calculating
         if (playerSelector)
         {
+            transform.position -= velocity;
             Vector3 exactPosition = cameras.transform.position + vectorFromCamera;
             if (ClampPositionWithinWorldBounds(ref exactPosition))
             {
@@ -107,7 +108,6 @@ public class SelectorController : MonoBehaviour {
 
             // Move the selector smoothly if still moving, otherwise snap to the grid
             if (dragScript.IsResting()) this.transform.position = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
-
             // Debug
             if (Vector3.Distance(this.transform.position, lastPosition) > distanceBeforePausingUpdates)
             {
@@ -152,7 +152,9 @@ public class SelectorController : MonoBehaviour {
 
     public void PlacePixel()
     {
-        Debug.Log("velocity: " + velocity.magnitude);
+        Debug.Log("Pixel placement, velocity: " + velocity.magnitude + " , distanceUntilDrag: " + distanceUntilDrag);
+        Debug.Log("In world bounds: " + networkManager.IsPositionWithinWorldBounds(this.transform.position));
+
         if (velocity.magnitude > distanceUntilDrag) return;
         if (!networkManager.IsPositionWithinWorldBounds(this.transform.position)) return;
         PlaySpawnEffect();

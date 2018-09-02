@@ -181,7 +181,7 @@ e04611b8715e6833d2bd7010fc6be10b Unity.TextMeshPro.dll:TMPro.TMP_StyleSheet
 2f9af06a78208a67db480e9bfed4a076 Unity.TextMeshPro.dll:TMPro.TextMeshPro
 9318334b30e9f195f573b2ce00154b95 Unity.TextMeshPro.dll:TMPro.TMP_ColorGradient
 56135ab8ceed5229e1ce2caab4ae1b4c Assembly-CSharp.dll:.CameraFollow
-012a3a33793d91e0108de6a91f7ffda7 Assembly-CSharp.dll:.MainMenuScript
+b89c514f212b13bbd2b9e95476db477b Assembly-CSharp.dll:.MainMenuScript
 93307bd34e39d73fd24e00ec39c25a91 Unity.TextMeshPro.dll:TMPro.TMP_SubMesh
-774d441ec362d071f06a0e0c3d9d6bcd Assembly-CSharp.dll:.DragScript
+49616306dc36b9f7301048ada1f16e74 Assembly-CSharp.dll:.DragScript
 584e567292b656cf068a0aeeb0db02df Assembly-CSharp.dll:.TextFitter

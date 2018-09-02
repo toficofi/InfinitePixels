@@ -3234,7 +3234,9 @@ MonoBehaviour:
   thresholdBeforeClearingDrag: 0.05
   lastPosition: {x: 0, y: 0}
   startPosition: {x: 0, y: 0}
-  distanceBeforeDrag: 100
+  deltaBeforeClipping: 0
+  distanceBeforeDrag: 50
+  framesPassBeforeDrag: 16
   selector: {fileID: 0}
 --- !u!1001 &1058884068
 Prefab:
@@ -3313,6 +3315,11 @@ Prefab:
     - target: {fileID: 4318836873099878, guid: 3c5258490c61af14b91cf40e43410a35, type: 2}
       propertyPath: m_LocalScale.y
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114285873580406930, guid: 3c5258490c61af14b91cf40e43410a35,
+        type: 2}
+      propertyPath: distanceUntilDrag
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c5258490c61af14b91cf40e43410a35, type: 2}

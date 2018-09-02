@@ -88,6 +88,7 @@
     <None Include="Assets\FastMobileBloom\readme.txt" />
     <None Include="Assets\Materials\Shaders\MobileDiffuseWithColour.shader" />
     <None Include="Assets\FastMobileBloom\FastMobileBloom.shader" />
+    <None Include="Assets\UI\InvertShader.shader" />
     <None Include="Assets\selector_cube_shader.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/git/InfinitePixels/Infinite Pixels/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
