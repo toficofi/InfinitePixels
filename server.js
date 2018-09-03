@@ -1,14 +1,47 @@
 var net = require('net')
 let fs = require('fs')
 let publicip = require("public-ip")
+var colors = require('colors');
 let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = false
-console.log("Infinite Pixels server loading...")
-if (!fs.existsSync("world")) fs.mkdirSync("world")
+let connectToLocalhost = true
+
+// LOGGING SETUP
+var winston = require('winston');
+
+//
+// Requiring `winston-papertrail` will expose
+// `winston.transports.Papertrail`
+//
+require('winston-papertrail').Papertrail;
+
+var winstonPapertrail = new winston.transports.Papertrail({
+  host: 'logs7.papertrailapp.com',
+  port: 36057,
+  colorization: "all",
+  colorize: true,
+})
+
+winstonPapertrail.on('error', function(err) {
+    console.log("Logging error:")
+    console.error(err)
+  // Handle, report, or silently ignore connection errors and failures
+});
+
+var logger = new winston.Logger({
+  level: 'verbose',
+  transports: [/*winstonPapertrail, */new winston.transports.Console({ level: 'debug' })]
+});
+
+logger.info('Loading Infinite Pixels server');
+
+if (!fs.existsSync("world")) {
+    logger.warn('No world folder detected, so making a new one')
+    fs.mkdirSync("world")
+}
 
 //setInterval(chunkUpdateTick, 2000)
 setInterval(saveChunks, 10000)
@@ -16,7 +49,6 @@ class Chunk {
     constructor(x, y) {
         this.x = x
         this.y = y
-        this.dirty = true
         this.pixels = {}
     }
 }
@@ -35,13 +67,15 @@ let clients = {}
 
 let server = net.createServer((socket) => {
     delete socket._readableState.decoder; // To force stream to read out numbers
-    console.log("CONNECTED: " + socket.remoteAddress + ":" + socket.remotePort)
+    logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, (Object.keys(clients).length + 1).toString().bold)
 
     socket.on("close", () => {
-        console.log("DISCONNECTED: " + socket.remoteAddress + ":" + socket.remotePort)
+        logger.info("Lost".red + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, (Object.keys(clients).length - 1).toString().bold)
         if (socket.client) {
             //broadcastClientQuit(socket.client.clientid)
             delete clients[socket.client.clientid]
+        } else {
+            logger.warn("Connection %s:%s disconnected without authenticating", socket.remoteAddress.bold, socket.remotePort)
         }
     })
     
@@ -51,21 +85,25 @@ let server = net.createServer((socket) => {
         switch (er.code) {
           // This is the expected case
           case 'ECONNRESET':
-          console.log("A client forcifully disconnected!")
+            if (socket.client) logger.debug("ECONNRESET".bold + " from player %s", socket.client.clientid)
+            else logger.debug("ECONNRESET".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
             break;
     
           // On Windows, this sometimes manifests as ECONNABORTED
           case 'ECONNABORTED':
+            if (socket.client) logger.debug("ECONNABORTED".bold + " from player %s", socket.client.clientid)
+            else logger.debug("ECONNABORTED".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
             break;
     
           // This test is timing sensitive so an EPIPE is not out of the question.
           // It should be infrequent, given the 50 ms timeout, but not impossible.
           case 'EPIPE':
-            break;
+            if (socket.client) logger.warn("EPIPE".bold + " from player %s", socket.client.clientid)
+            else logger.warn("EPIPE".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
     
           default:
-            console.log("Got unknown error: ")
-            console.log(er)
+            if (socket.client) logger.warn("Unknown socket error %j".bold + " from player %s", er, socket.client.clientid)
+            else logger.warn("Unknown socket error %j".bold + "from %s:%s", er, socket.remoteAddress.bold, socket.remotePort)
             break;
             }
         }
@@ -78,6 +116,7 @@ let server = net.createServer((socket) => {
 function readString(data, offset) {
     let stringLength = data.readUInt8(offset)
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
+    logger.debug("Read string %s of length %d with offset %d", string.bold, stringLength, offset)
     return string
 }
 
@@ -94,7 +133,10 @@ function getPacketInformationFromHeader (data) {
     let currentPacketIdentifier = data.readUInt8()
     let length = 0 // Expected length of the packet not including the identifier
 
-    if (currentPacketIdentifier === null) return null
+    if (currentPacketIdentifier === null) {
+        // Why is the first byte sometimes null?
+        return null
+    }
 
     switch (currentPacketIdentifier) {
         // Connection request
@@ -125,7 +167,7 @@ function getPacketInformationFromHeader (data) {
     }
 
     slicedData = data.slice(1)
-
+    logger.silly("Looked up packet identifier %d and got a length of %d bytes", currentPacketIdentifier, length)
     return {ident: currentPacketIdentifier,
             length: length, 
             slicedData: slicedData}
@@ -138,14 +180,13 @@ function endConnection(socket) {
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
     if (identifier !== 0 && !socket.client) { 
-        console.log("Client tried to send packets before authing")
+        logger.warn("Unauthenticated client %s:%s sent a non-0 packet with ident %d, " + "dropping".red.bold, socket.remoteAddress.bold, socket.remotePort, ident)
         return
     }
 
     switch (identifier) {
         case 0: 
             let clientid = readString(data, 0)
-
             let shouldAccept = shouldAcceptClient(clientid)
 
             response = null
@@ -158,9 +199,9 @@ function processPacket(data, socket) {
                 socket.client.colour = {r: 1.0, g: 1.0, b: 1.0}
                 socket.client.selectorColour = 1
                 clients[clientid] = socket.client
-                console.log("Accepted client " + clientid)
+                logger.info("Authenticated".green + " %s:%s as %s", socket.remoteAddress.bold, socket.remotePort, clientid)
             } else {
-                console.log("Banned client " + clientid)
+                logger.info("Banned".red + " %s:%s as %s", socket.remoteAddress.bold, socket.remotePort, clientid)
                 response = new Buffer([0x02])
                 response = Buffer.concat([response, new Buffer.from("Banned from server", "ascii")])
             }
@@ -176,6 +217,8 @@ function processPacket(data, socket) {
             socket.client.position.y = posz
             socket.client.velocity.x = velx
             socket.client.velocity.z = velz
+
+            logger.debug(socket.client.clientid.bold + " updated position to p[%d, %d], v[%d, %d]", posx, posz, velx, velz)
 
             for (key in clients) {
                 clnt = clients[key]
@@ -197,11 +240,13 @@ function processPacket(data, socket) {
             let chunkz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(chunkx, chunkz)) {
-                console.log("Client " + socket.client.clientid + " tried to request chunk outwith world size of " + worldSize + ", chunk " + chunkx + ", " + chunkz)
+                logger.warn(socket.client.clientid.bold + " tried to request chunk outwith world size of to %d, [%d, %d]", worldSize, chunkx, chunkz)
                 break;
             }
-
+           
             newChunk = getChunkAtPosition({x: chunkx, y: chunkz})
+
+            logger.debug(socket.client.clientid.bold + " requested chunk [%d, %d]", chunkx, chunkz)
             sendChunkPacket(newChunk, socket.client)
             break
         case 7:
@@ -210,13 +255,13 @@ function processPacket(data, socket) {
             let pixelz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(pixelx, pixelz)) {
-                console.log("Client " + socket.client.clientid + " tried to place pixel outwith world size of " + worldSize + ", position " + pixelx + ", " + pixelz)
+                logger.warn(socket.client.clientid.bold + " tried to place pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
                 break;
             }
 
             let pixelid = data.readInt32LE(8)
+            logger.verbose(socket.client.clientid.bold + " placed pixel at [%d, %d] in colour %d", pixelx, pixelz, pixelid)
             playerPlacedPixel(pixelx, pixelz, pixelid)
-            console.log(socket.client.clientid + " placed pixel at " + pixelx + ", " + pixelz + " in colour " + pixelid)
             break
         case 8:
             // Pixel removal packet
@@ -224,7 +269,7 @@ function processPacket(data, socket) {
             let rpixelz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(rpixelx, rpixelz)) {
-                console.log("Client " + socket.client.clientid + " tried to place pixel outwith world size of " + worldSize + ", position " + rpixelx + ", " + rpixelz)
+                logger.warn(socket.client.clientid.bold + " tried to remove pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
                 break;
             }
             playerRemovedPixel(rpixelx, rpixelz)
@@ -253,8 +298,8 @@ function processPacket(data, socket) {
             socket.client.name = playerName
             socket.client.colour = {r: r, g: g, b: b}
             socket.client.selectorColour = selectorColour
-        
-            console.log("Player " + socket.client.clientid + " updated name to " + playerName + ", colour to " + JSON.stringify(socket.client.colour) + " and selector colour to " + selectorColour)
+            
+            logger.verbose(socket.client.clientid.bold + " updated name to %s, colour to {%d,%d,%d} and selector colour to %d", playerName, r, g, b, selectorColour)
 
             
             for (key in clients) {
@@ -277,8 +322,7 @@ function processPacket(data, socket) {
             }
             break
         default:
-            if (socket.client) console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from " + socket.client.clientid)
-            else console.log("Invalid packet recv, ident: " + currentPacketIdentifier + " from unauthed player " + socket.remoteAddress)
+            logger.warn("Invalid packet identifier %s from %s - ending connection", identifier.toString().bold, socket.client.clientid.bold)
             endConnection(socket)
             
     }
@@ -298,11 +342,14 @@ function readData(data, socket) {
             if (expectsNewPacket) {
                 packetBuffer = new Buffer(0)
                 currentPacketInfo = getPacketInformationFromHeader(data)
-                if (currentPacketInfo === null) {
-                console.log("Got null data from socket " + socket.remoteAddress + " - look into this!")
-                endConnection(socket)
-                return  
-                }// TODO: Figure out why this happens
+                if (currentPacketInfo !== null) {
+                    if (socket.client) logger.warn("Tried to read packet identifier from %s but got " + "null".red + "! Disconnecting...", socket.client.clientid)
+                    else logger.warn("Tried to read packet identifier from " + "unauthed".bold + " %s:%s but got " + "null".red + "! Disconnecting...", socket.remoteAddress.bold, socket.remotePort)
+
+                    endConnection(socket)
+                    return  
+                }
+                
                 data = currentPacketInfo.slicedData
                 expectedLengthRemaining = currentPacketInfo.length
                 expectsNewPacket = false
@@ -331,14 +378,15 @@ function readData(data, socket) {
 
 publicip.v4().then(ip => {
     if (connectToLocalhost) ip = "localhost"
-    console.log("Starting server with outward-facing IP: " + ip)
+
+    logger.info("Starting server with outwards-facing IP %s", ip.bold.green)
     server.listen(80, ip, (err) => {
-        console.log("Infinite Pixels server running!")
+        logger.info("READY".green + " - accepting connections")
     })
 });
 
 server.on("error", (err) => {
-    console.log("SERVER ERROR: " + err)
+    logger.error("Uncaught server error: %j", err)
 })
 
 function shouldAcceptClient(clientid) {
@@ -354,13 +402,6 @@ function getChunkAtPosition(position) {
     if (!chunk) return loadChunkAtPosition(position)
     else return chunk
 
-}
-
-
-
-function sendChunkPacketIfDirty(chunk, client) {
-    if (chunk.dirty) sendChunkPacket(chunk, client)
-    // How do we make the dirty flag specific for one client?
 }
 
 function broadcastClientQuit(clientid) {

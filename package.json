@@ -5,6 +5,10 @@
   "name": "infinitepixels",
   "version": "1.0.0",
   "dependencies": {
-    "public-ip": "2.4.0"
+    "colors": "^1.3.2",
+    "public-ip": "2.4.0",
+    "winston": "^2.4.4",
+    "winston-papertrail": "^1.0.5",
+    "winston-papertrail-fix": "^1.0.1-beta.6"
   }
 }
