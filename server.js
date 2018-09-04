@@ -7,7 +7,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = false
+let connectToLocalhost = true
 
 // LOGGING SETUP
 var winston = require('winston');
@@ -22,7 +22,7 @@ var winstonPapertrail = new winston.transports.Papertrail({
   host: 'logs7.papertrailapp.com',
   port: 36057,
   colorization: "all",
-  level: "verbose",
+  level: "info",
   colorize: true,
 })
 
@@ -523,7 +523,7 @@ function saveChunk(chunk) {
     try {
         // Don't save if there are no pixels in the chunk
         if (Object.keys(chunk.pixels) == 0) {
-            logger.debug("Skipping saving chunk [%d, %d] with %d pixels to file as it is blank", chunk.x)
+            logger.debug("Skipping saving chunk [%d, %d] to file as it is blank", chunk.x, chunk.y)
             return
         }
 
