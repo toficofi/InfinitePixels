@@ -7,7 +7,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = true
+let connectToLocalhost = false
 
 // LOGGING SETUP
 var winston = require('winston');
@@ -22,18 +22,18 @@ var winstonPapertrail = new winston.transports.Papertrail({
   host: 'logs7.papertrailapp.com',
   port: 36057,
   colorization: "all",
+  level: "verbose",
   colorize: true,
 })
 
 winstonPapertrail.on('error', function(err) {
     console.log("Logging error:")
     console.error(err)
-  // Handle, report, or silently ignore connection errors and failures
 });
 
 var logger = new winston.Logger({
-  level: 'verbose',
-  transports: [/*winstonPapertrail, */new winston.transports.Console({ level: 'debug' })]
+  level: 'debug',
+  transports: [winstonPapertrail, new winston.transports.Console(), new winston.transports.File({ filename: 'combined.log' })]
 });
 
 logger.info('Loading Infinite Pixels server');
@@ -59,7 +59,6 @@ class Client {
         this.velocity = {x: 0, y: 0}
         this.clientid = clientid
         this.socket = socket
-        this.loadedChunkPositions = {}
     }
 }
 
@@ -342,14 +341,14 @@ function readData(data, socket) {
             if (expectsNewPacket) {
                 packetBuffer = new Buffer(0)
                 currentPacketInfo = getPacketInformationFromHeader(data)
-                if (currentPacketInfo !== null) {
+                if (currentPacketInfo == null) {
                     if (socket.client) logger.warn("Tried to read packet identifier from %s but got " + "null".red + "! Disconnecting...", socket.client.clientid)
                     else logger.warn("Tried to read packet identifier from " + "unauthed".bold + " %s:%s but got " + "null".red + "! Disconnecting...", socket.remoteAddress.bold, socket.remotePort)
 
                     endConnection(socket)
                     return  
                 }
-                
+
                 data = currentPacketInfo.slicedData
                 expectedLengthRemaining = currentPacketInfo.length
                 expectsNewPacket = false
@@ -370,8 +369,9 @@ function readData(data, socket) {
             }
         }
     } catch (e) {
-        console.log("While processing packet for " + socket.remoteAddress + " - got this error:")
-        console.log(e.stack)
+        if (socket.client) logger.warn("Error".red.bold + " while processing packet for %s. Current packet info: %j", socket.client.clientid.bold, currentPacketInfo)
+        else logger.warn("Error".red.bold + " while processing packet for unauthed %s:%s. Current packet info: %j", socket.remoteAddress.bold, socket.remotePort, currentPacketInfo)
+        logger.error(e)
         endConnection(socket)
     }
 }
@@ -394,16 +394,18 @@ function shouldAcceptClient(clientid) {
 }
 
 
-
-
 function getChunkAtPosition(position) {
     // Try and get chunk from memory, otherwise load from file
     let chunk = chunks[position.x + "," + position.y]
-    if (!chunk) return loadChunkAtPosition(position)
-    else return chunk
-
+    if (!chunk) {
+        return loadChunkAtPosition(position)
+    } else {
+        logger.silly("Sending chunk [%d, %d] from cache with %d pixels", position.x, position.y, Object.keys(chunk.pixels).length)
+        return chunk
+    }
 }
 
+// Defunct, players are removed from other people's games by not sending a position update in a while
 function broadcastClientQuit(clientid) {
     for (cid in clients) {
         if (cid == clientid) continue
@@ -412,55 +414,57 @@ function broadcastClientQuit(clientid) {
         packet.writeInt8(0xA, 0)
         packet.writeUInt8(clientid.length, 1)
         packet = Buffer.concat([packet, new Buffer.from(clientid, "ascii")])
-        console.log("Broadcasting client quit " + clientid)
         clnt.socket.write(packet)
     }
 }
 
 function broadcastChunkPacket(chunk) {
     // TODO: Only update players nearby
-
+    logger.silly("Broadcasting chunk change [%d, %d] to %d other players", chunk.x, chunk.y, Object.keys(clients).length)
     for (clientid in clients) {
         sendChunkPacket(chunk, clients[clientid])
     }
 }
 
 function sendChunkPacket(chunk, client) {
-    // If chunk has no pixel data just send a blank chunk packet
-    if (Object.keys(chunk.pixels).length == 0) {
-        let emptyChunkPacket = new Buffer(9)
-        emptyChunkPacket.writeInt8(0x05, 0)
-        emptyChunkPacket.writeInt32LE(chunk.x, 1)
-        emptyChunkPacket.writeInt32LE(chunk.y, 5)
-    
-        client.socket.write(emptyChunkPacket)
-    } else {
-        // Otherwise send all the pixels
-        let chunkPacket = new Buffer(9 + (chunkSize * chunkSize))
-        chunkPacket.writeInt8(0x09, 0)
-        chunkPacket.writeInt32LE(chunk.x, 1)
-        chunkPacket.writeInt32LE(chunk.y, 5)
-        let byteCount = 9
+    try { 
+        // If chunk has no pixel data just send a blank chunk packet
+        if (Object.keys(chunk.pixels).length == 0) {
+            logger.silly("Sending " + "blank".bold + " chunk [%d, %d] to %s", chunk.x, chunk.y, client.clientid)
+            let emptyChunkPacket = new Buffer(9)
+            emptyChunkPacket.writeInt8(0x05, 0)
+            emptyChunkPacket.writeInt32LE(chunk.x, 1)
+            emptyChunkPacket.writeInt32LE(chunk.y, 5)
+        
+            client.socket.write(emptyChunkPacket)
+        } else {
+            logger.silly("Sending chunk [%d, %d] to %s", chunk.x, chunk.y, client.clientid)
+            // Otherwise send all the pixels
+            let chunkPacket = new Buffer(9 + (chunkSize * chunkSize))
+            chunkPacket.writeInt8(0x09, 0)
+            chunkPacket.writeInt32LE(chunk.x, 1)
+            chunkPacket.writeInt32LE(chunk.y, 5)
+            let byteCount = 9
 
-        for (let x = 0; x < chunkSize; x++) {
-            for (let y = 0; y < chunkSize; y++) {
-                // If the pixel is not found, set the colour to 0, which is blank
-                let pixelColor = 0
+            for (let x = 0; x < chunkSize; x++) {
+                for (let y = 0; y < chunkSize; y++) {
+                    // If the pixel is not found, set the colour to 0, which is blank
+                    let pixelColor = 0
 
-                let pixelKey = x + "," + y
-                if (pixelKey in chunk.pixels) pixelColor = chunk.pixels[pixelKey]
+                    let pixelKey = x + "," + y
+                    if (pixelKey in chunk.pixels) pixelColor = chunk.pixels[pixelKey]
 
-                chunkPacket.writeInt8(pixelColor, byteCount)
-                byteCount++
+                    chunkPacket.writeInt8(pixelColor, byteCount)
+                    byteCount++
+                }
             }
+
+            client.socket.write(chunkPacket)
         }
-
-        client.socket.write(chunkPacket)
+    } catch (e) {
+        logger.warn("Error while sending chunk [%d, %d] to %s", chunk.x, chunk.y, client.clientid)
+        logger.error(e)
     }
-
-    // Store already loaded positions as a key as string x,y
-    // Floating point ambiguity is not a problem as this will always be a whole number
-    client.loadedChunkPositions[chunk.x + "," + chunk.y] = chunk
 }
 
 
@@ -491,6 +495,7 @@ function getRelativePixelPos(pixelPosition, chunkPosition) {
     return {x: x, y: y}
 }
 
+// DEFUNCT - clients now request the chunks they want
 function isChunkWithinViewingArea(client, position) {
     var a = client.position.x - position.x
     var b = client.position.y - position.y
@@ -507,6 +512,7 @@ function getNearestChunkTo(position) {
 
 
 function saveChunks() {
+    logger.verbose("SAVING WORLD...".bold.green)
     for (chunkloc in chunks) {
         saveChunk(chunks[chunkloc])
     }
@@ -514,28 +520,37 @@ function saveChunks() {
 
 
 function saveChunk(chunk) {
-    // Don't save if there are no pixels in the chunk
-    if (Object.keys(chunk.pixels) == 0) return
-
-    var wstream = fs.createWriteStream("world/Chunk" + chunk.x + "," + chunk.y);
-    var buffer = new Buffer(chunkSize*chunkSize)
-    let byteCount = 0
-
-    for (let x = 0; x < chunkSize; x++) {
-        for (let y = 0; y < chunkSize; y++) {
-            // If the pixel is not found, set the colour to 0, which is blank
-            let pixelColor = 0
-
-            let pixelKey = x + "," + y
-            if (pixelKey in chunk.pixels) pixelColor = chunk.pixels[pixelKey]
-
-            buffer.writeInt8(pixelColor, byteCount)
-            byteCount++
+    try {
+        // Don't save if there are no pixels in the chunk
+        if (Object.keys(chunk.pixels) == 0) {
+            logger.debug("Skipping saving chunk [%d, %d] with %d pixels to file as it is blank", chunk.x)
+            return
         }
+
+        logger.debug("Saving chunk [%d, %d] with %d pixels to file world/Chunk" + chunk.x + "," + chunk.y, chunk.x, chunk.y, Object.keys(chunk.pixels).length)
+        var wstream = fs.createWriteStream("world/Chunk" + chunk.x + "," + chunk.y);
+        var buffer = new Buffer(chunkSize*chunkSize)
+        let byteCount = 0
+
+        for (let x = 0; x < chunkSize; x++) {
+            for (let y = 0; y < chunkSize; y++) {
+                // If the pixel is not found, set the colour to 0, which is blank
+                let pixelColor = 0
+
+                let pixelKey = x + "," + y
+                if (pixelKey in chunk.pixels) pixelColor = chunk.pixels[pixelKey]
+
+                buffer.writeInt8(pixelColor, byteCount)
+                byteCount++
+            }
+        }
+        
+        wstream.write(buffer)
+        wstream.end();
+    } catch (e) {
+        logger.error("Error while saving chunk [%d, %d] to file", chunk.x, chunk.y)
+        logger.error(e)
     }
-    
-    wstream.write(buffer)
-    wstream.end();
 }
 
 function loadChunkAtPosition(position) {
@@ -543,27 +558,33 @@ function loadChunkAtPosition(position) {
     if (!fs.existsSync("world/Chunk" + position.x + "," + position.y)) {
         let newChunk = new Chunk(position.x, position.y)
         chunks[position.x + "," + position.y] = newChunk
+        logger.silly("Created new chunk [%d, %d]", position.x, position.y)
         return newChunk
     }
-
     
      let chunk = new Chunk(position.x, position.y)
      chunks[position.x + "," + position.y] = chunk
 
-     let buffer = fs.readFileSync("world/Chunk" + position.x + "," + position.y)
-     //console.log("Buffer contents: '" + buffer.toString() + "'")
+     try {
+        let buffer = fs.readFileSync("world/Chunk" + position.x + "," + position.y)
+        //console.log("Buffer contents: '" + buffer.toString() + "'")
 
-    let byteCount = 0
-     for (let x = 0; x < chunkSize; x++) {
-         for (let y = 0; y < chunkSize; y++) {
-             // If the pixel is not found, set the colour to 0, which is blank
-             let pixelKey = x + "," + y
-            
-             let pixelColor = buffer.readInt8(byteCount)
-             if (pixelColor > 0) chunk.pixels[pixelKey] = pixelColor
-             byteCount++
-         }
-     }
+        let byteCount = 0
+        for (let x = 0; x < chunkSize; x++) {
+            for (let y = 0; y < chunkSize; y++) {
+                // If the pixel is not found, set the colour to 0, which is blank
+                let pixelKey = x + "," + y
+                
+                let pixelColor = buffer.readInt8(byteCount)
+                if (pixelColor > 0) chunk.pixels[pixelKey] = pixelColor
+                byteCount++
+            }
+        }
+        logger.silly("Loaded chunk [%d, %d] from file with %d pixels", position.x, position.y, Object.keys(chunk.pixels).length)
+    } catch (e) {
+        logger.error("While loading chunk [%d, %d] from file, got an " + "error".red, position.x, position.y)
+        logger.error(e)
+    }
 
-     return chunk
+    return chunk
 }

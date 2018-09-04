@@ -47,3 +47,5 @@ Infinite Pixels/Library/ShaderCache/
 Infinite Pixels/Library/metadata/
 world/
 node_modules/
+
+*.log
