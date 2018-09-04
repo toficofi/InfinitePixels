@@ -7,7 +7,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = true
+let connectToLocalhost = false
 
 // LOGGING SETUP
 var winston = require('winston');
