@@ -66,6 +66,8 @@ let clients = {}
 
 let server = net.createServer((socket) => {
     delete socket._readableState.decoder; // To force stream to read out numbers
+    socket.shouldDisconnect = false
+
     logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, (Object.keys(clients).length + 1).toString().bold)
 
     socket.on("close", () => {
@@ -173,13 +175,15 @@ function getPacketInformationFromHeader (data) {
 }
 
 function endConnection(socket) {
+    socket.shouldDisconnect = true
     socket.destroy()
 }
 
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
     if (identifier !== 0 && !socket.client) { 
-        logger.warn("Unauthenticated client %s:%s sent a non-0 packet with ident %d, " + "dropping".red.bold, socket.remoteAddress.bold, socket.remotePort, ident)
+        logger.warn("Unauthenticated client %s:%s sent a non-0 packet with ident %d, " + "disconnecting".red.bold, socket.remoteAddress.bold, socket.remotePort, identifier)
+        endConnection(socket)
         return
     }
 
@@ -336,7 +340,7 @@ nextPacketData = null
 
 function readData(data, socket) {
     try {
-        while (data.length > 0) {
+        while (data.length > 0 && socket.shouldDisconnect == false) {
             // If we expect the next data to be a new packet, read the length and identifier
             if (expectsNewPacket) {
                 packetBuffer = new Buffer(0)
@@ -379,8 +383,8 @@ function readData(data, socket) {
 publicip.v4().then(ip => {
     if (connectToLocalhost) ip = "localhost"
 
-    logger.info("Starting server with outwards-facing IP %s", ip.bold.green)
-    server.listen(80, ip, (err) => {
+    logger.info("Starting server with outwards-facing IP %s:%s", ip.bold.green, port)
+    server.listen(port, ip, (err) => {
         logger.info("READY".green + " - accepting connections")
     })
 });
