@@ -8,6 +8,7 @@ let chunkSize = 16
 let port = 80
 let worldSize = 5000
 let connectToLocalhost = false
+let loggingLevel = process.env.LOG_LEVEL || "debug"
 
 // LOGGING SETUP
 var winston = require('winston');
@@ -32,7 +33,7 @@ winstonPapertrail.on('error', function(err) {
 });
 
 var logger = new winston.Logger({
-  level: 'debug',
+  level: loggingLevel,
   transports: [winstonPapertrail, new winston.transports.Console(), new winston.transports.File({ filename: 'combined.log' })]
 });
 
