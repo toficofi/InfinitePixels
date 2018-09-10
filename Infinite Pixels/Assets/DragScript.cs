@@ -12,15 +12,17 @@ public class DragScript : MonoBehaviour {
     public float distanceBeforeDrag;
     public float framesPassBeforeDrag;
     public SelectorController selector;
+    CameraScript cameraScript;
     float frameCountAtMouseDown = 0; // Time.frameCount at the time of mousedown
 	// Use this for initialization
 	void Start () {
         selector = GameObject.Find("selector").GetComponent<SelectorController>();
+        cameraScript = cameras.GetComponent<CameraScript>();
 	}
 
     public bool IsResting()
     {
-        return selector.velocity.magnitude < selector.speedToSwitchToGentleMode;
+        return selector.velocity.magnitude < cameraScript.speedToSwitchToGentleMode;
     }
 
     // Update is called once per frame
@@ -30,19 +32,19 @@ public class DragScript : MonoBehaviour {
         {
             Vector2 delta = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - lastPosition;
             //if (delta.magnitude < deltaBeforeClipping) delta = new Vector2(0, 0);
-            delta.y *= 1.5f; // Compensate for horizontal display
-            if (selector.velocity.magnitude < selector.speedToSwitchToGentleMode) delta *= selector.gentleModeSensitivity;
-            else delta *= selector.sensitivity;
+            //delta.y *= 1.5f; // Compensate for horizontal display
+            if (selector.velocity.magnitude < cameraScript.speedToSwitchToGentleMode) delta *= cameraScript.gentleModeSensitivity;
+            else delta *= cameraScript.sensitivity;
             selector.velocity += new Vector3(delta.x, 0, delta.y);
             lastPosition = Input.mousePosition;
         }
 
 
         selector.velocity *= selector.drag;
-        if (selector.velocity.x > selector.maxSpeed) selector.velocity.x = selector.maxSpeed;
-        if (selector.velocity.z > selector.maxSpeed) selector.velocity.z = selector.maxSpeed;
-        if (selector.velocity.x < -selector.maxSpeed) selector.velocity.x = -selector.maxSpeed;
-        if (selector.velocity.z < -selector.maxSpeed) selector.velocity.z = -selector.maxSpeed;
+        if (selector.velocity.x > cameraScript.maxSpeed) selector.velocity.x = cameraScript.maxSpeed;
+        if (selector.velocity.z > cameraScript.maxSpeed) selector.velocity.z = cameraScript.maxSpeed;
+        if (selector.velocity.x < -cameraScript.maxSpeed) selector.velocity.x = -cameraScript.maxSpeed;
+        if (selector.velocity.z < -cameraScript.maxSpeed) selector.velocity.z = -cameraScript.maxSpeed;
         if (selector.velocity.magnitude < thresholdBeforeClearingDrag && !mouseDown) selector.velocity = new Vector2(0, 0);
         cameras.transform.position -= selector.velocity;
     }
@@ -68,7 +70,7 @@ public class DragScript : MonoBehaviour {
         float delta = (startPosition - new Vector2(Input.mousePosition.x, Input.mousePosition.y)).magnitude;
         Debug.Log("Delta: " + delta + " - distance before drag: " + distanceBeforeDrag);
         Debug.Log("Frames since mouseDown: " + framesSince);
-        if (delta < distanceBeforeDrag && framesSince < framesPassBeforeDrag) {
+        if (IsResting() && delta < distanceBeforeDrag && framesSince < framesPassBeforeDrag) {
             
             selector.PlacePixel();
         }

@@ -12,18 +12,16 @@ public class SelectorController : MonoBehaviour {
 
     // Drag settings
     public float drag = 0.25f;
-    public float maxSpeed = 2f;
     public float networkCorrectionSpeed = 1f;
     public float networkUpdateFrequency = 10f;
     public Vector3 velocity;
     public int distanceBeforeTeleporting;
     public float distanceUntilDrag;
-    public float sensitivity;
-    public float speedToSwitchToGentleMode;
-    public float gentleModeSensitivity;
+
     public GameObject tvDude;
     public GameObject spawnEffect;
     public GameObject cameras;
+    CameraScript cameraScript;
 
     public float secondsSinceLastUpdate = 0;
 
@@ -47,6 +45,7 @@ public class SelectorController : MonoBehaviour {
         pixelManager = GameObject.Find("PixelCanvas").GetComponent<PixelManager>();
         dragScript = GameObject.Find("DragReciever").GetComponent<DragScript>();
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManagerScript>();
+        cameraScript = cameras.GetComponent<CameraScript>();
         audio = this.GetComponent<AudioSource>();
         if (playerSelector) vectorFromCamera =  this.transform.position - cameras.transform.position;
 	}
@@ -126,7 +125,7 @@ public class SelectorController : MonoBehaviour {
             // Position is controlled by network, just snap to grid
             Vector3 exactPosition = this.targetPosition;
 
-            if (this.velocity.magnitude < speedToSwitchToGentleMode) this.targetPosition = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
+            if (this.velocity.magnitude < cameraScript.speedToSwitchToGentleMode) this.targetPosition = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
 
             // Lerp between client position and network reported position
             transform.position = Vector3.MoveTowards(transform.position, targetPosition,  networkCorrectionSpeed);
