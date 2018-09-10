@@ -9,7 +9,12 @@ public class CameraScript : MonoBehaviour {
     public List<Camera> cameras;
     public int cameraLevel = 0;
 
-    
+    // These are updated as the current camera changes
+    public float sensitivity;
+    public float speedToSwitchToGentleMode;
+    public float gentleModeSensitivity;
+    public float maxSpeed = 2f;
+
     public void IncreaseCameraLevel()
     {
         cameraLevel++;
@@ -29,7 +34,14 @@ public class CameraScript : MonoBehaviour {
         currentCamera.enabled = false;
         currentCamera = cam;
         currentCamera.enabled = true;
-        chunkManager.viewingDistance = currentCamera.gameObject.GetComponent<CameraDataScript>().viewingArea;
+        CameraDataScript camScript = currentCamera.gameObject.GetComponent<CameraDataScript>();
+
+        chunkManager.viewingDistance = camScript.viewingArea;
+
+        sensitivity = camScript.sensitivity;
+        speedToSwitchToGentleMode = camScript.speedToSwitchToGentleMode;
+        gentleModeSensitivity = camScript.gentleModeSensitivity;
+        maxSpeed = camScript.maxSpeed;
         //selector.vectorFromCamera = selector.transform.position - currentCamera.transform.position;y
     }
 
@@ -42,4 +54,5 @@ public class CameraScript : MonoBehaviour {
 	void Update () {
 		
 	}
+
 }

@@ -954,6 +954,10 @@ MonoBehaviour:
   - {fileID: 1141932090}
   - {fileID: 560308952}
   cameraLevel: 0
+  sensitivity: 0
+  speedToSwitchToGentleMode: 0
+  gentleModeSensitivity: 0
+  maxSpeed: 2
 --- !u!81 &263147387
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1744,6 +1748,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 12
+  sensitivity: 0.025
+  speedToSwitchToGentleMode: 0
+  gentleModeSensitivity: 0
+  maxSpeed: 5
 --- !u!1 &574109121
 GameObject:
   m_ObjectHideFlags: 0
@@ -3238,6 +3246,7 @@ MonoBehaviour:
   distanceBeforeDrag: 50
   framesPassBeforeDrag: 16
   selector: {fileID: 0}
+  PanSpeed: 20
 --- !u!1001 &1058884068
 Prefab:
   m_ObjectHideFlags: 0
@@ -3508,6 +3517,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 4
+  sensitivity: 0.01
+  speedToSwitchToGentleMode: 0.5
+  gentleModeSensitivity: 0.002
+  maxSpeed: 2
 --- !u!1 &1082993689
 GameObject:
   m_ObjectHideFlags: 0
@@ -3799,6 +3812,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 4
+  sensitivity: 0.01
+  speedToSwitchToGentleMode: 1
+  gentleModeSensitivity: 0.002
+  maxSpeed: 2
 --- !u!1 &1141932085
 GameObject:
   m_ObjectHideFlags: 0
@@ -3897,6 +3914,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 6
+  sensitivity: 0.008
+  speedToSwitchToGentleMode: 0
+  gentleModeSensitivity: 0
+  maxSpeed: 5
 --- !u!1 &1170896782
 GameObject:
   m_ObjectHideFlags: 0
@@ -4699,6 +4720,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 4
+  sensitivity: 0.01
+  speedToSwitchToGentleMode: 0.6
+  gentleModeSensitivity: 0.003
+  maxSpeed: 2
 --- !u!1 &1508751315
 GameObject:
   m_ObjectHideFlags: 0
@@ -6649,3 +6674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewingArea: 5
+  sensitivity: 0.05
+  speedToSwitchToGentleMode: 0
+  gentleModeSensitivity: 0
+  maxSpeed: 5

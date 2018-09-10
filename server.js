@@ -7,7 +7,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = false
+let connectToLocalhost = true
 let loggingLevel = process.env.LOG_LEVEL || "debug"
 
 // LOGGING SETUP
