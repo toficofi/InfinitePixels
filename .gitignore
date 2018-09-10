@@ -9,10 +9,9 @@
 sysinfo.txt
 *.stackdump
 /Assets/AssetStoreTools*
-*.apk
 *.unitypackage
-*.exe
 *.dll
+*.log
  
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
