@@ -7,7 +7,7 @@ let viewingDistance = 40
 let chunkSize = 16
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = true
+let connectToLocalhost = false
 let loggingLevel = process.env.LOG_LEVEL || "debug"
 
 // LOGGING SETUP
@@ -69,16 +69,18 @@ let server = net.createServer((socket) => {
     delete socket._readableState.decoder; // To force stream to read out numbers
     socket.shouldDisconnect = false
 
-    logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, (Object.keys(clients).length + 1).toString().bold)
+    logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress, socket.remotePort, (Object.keys(clients).length + 1).toString().bold)
 
     socket.on("close", () => {
-        logger.info("Lost".red + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, (Object.keys(clients).length - 1).toString().bold)
+
         if (socket.client) {
             //broadcastClientQuit(socket.client.clientid)
             delete clients[socket.client.clientid]
         } else {
-            logger.warn("Connection %s:%s disconnected without authenticating", socket.remoteAddress.bold, socket.remotePort)
+            logger.warn("Connection %s:%s disconnected without authenticating", socket.remoteAddress, socket.remotePort)
         }
+
+        logger.info("Lost".red + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, Object.keys(clients).length.toString().bold)
     })
     
     currentPacketIdentifier = null
@@ -88,24 +90,24 @@ let server = net.createServer((socket) => {
           // This is the expected case
           case 'ECONNRESET':
             if (socket.client) logger.debug("ECONNRESET".bold + " from player %s", socket.client.clientid)
-            else logger.debug("ECONNRESET".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
+            else logger.debug("ECONNRESET".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
             break;
     
           // On Windows, this sometimes manifests as ECONNABORTED
           case 'ECONNABORTED':
             if (socket.client) logger.debug("ECONNABORTED".bold + " from player %s", socket.client.clientid)
-            else logger.debug("ECONNABORTED".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
+            else logger.debug("ECONNABORTED".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
             break;
     
           // This test is timing sensitive so an EPIPE is not out of the question.
           // It should be infrequent, given the 50 ms timeout, but not impossible.
           case 'EPIPE':
             if (socket.client) logger.warn("EPIPE".bold + " from player %s", socket.client.clientid)
-            else logger.warn("EPIPE".bold + " from %s:%s", socket.remoteAddress.bold, socket.remotePort)
+            else logger.warn("EPIPE".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
     
           default:
             if (socket.client) logger.warn("Unknown socket error %j".bold + " from player %s", er, socket.client.clientid)
-            else logger.warn("Unknown socket error %j".bold + "from %s:%s", er, socket.remoteAddress.bold, socket.remotePort)
+            else logger.warn("Unknown socket error %j".bold + "from %s:%s", er, socket.remoteAddress, socket.remotePort)
             break;
             }
         }
