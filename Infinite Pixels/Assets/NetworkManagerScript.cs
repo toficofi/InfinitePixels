@@ -569,6 +569,7 @@ public class NetworkManagerScript : MonoBehaviour
 
     public void UpdatePositionForOtherPlayer(string otherid, Vector2 position, Vector2 velocity)
     {
+        Debug.Log("pos update: " + otherid);
         OtherPlayerPositionUpdate upd = new OtherPlayerPositionUpdate();
         upd.id = otherid;
         upd.position = position;

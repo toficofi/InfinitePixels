@@ -125,7 +125,7 @@ public class SelectorController : MonoBehaviour {
             // Position is controlled by network, just snap to grid
             Vector3 exactPosition = this.targetPosition;
 
-            if (this.velocity.magnitude < cameraScript.speedToSwitchToGentleMode) this.targetPosition = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
+           // if (this.velocity.magnitude < cameraScript.speedToSwitchToGentleMode) this.targetPosition = new Vector3(Mathf.Round(exactPosition.x), 0, Mathf.Round(exactPosition.z));
 
             // Lerp between client position and network reported position
             transform.position = Vector3.MoveTowards(transform.position, targetPosition,  networkCorrectionSpeed);
