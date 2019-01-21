@@ -45,6 +45,12 @@ public class CameraScript : MonoBehaviour {
         //selector.vectorFromCamera = selector.transform.position - currentCamera.transform.position;y
     }
 
+    public void SetCameraLevel(int cameraLevel)
+    {
+        this.cameraLevel = cameraLevel;
+        ChangeToCamera(cameras[cameraLevel]);
+    }
+
 	// Use this for initialization
 	void Start () {
         ChangeToCamera(cameras[0]);

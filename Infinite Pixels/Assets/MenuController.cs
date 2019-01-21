@@ -18,12 +18,12 @@ public class MenuController : MonoBehaviour {
     public GameObject zoomIn;
     public GameObject zoomOut;
     public GameObject reportButton;
+    public GameObject screenShot;
     public GameObject settingsButton;
     public GameObject teleportButton;
     public GameObject swatches;
     public TVDudeScript tvDude;
     public CameraScript cameraScript;
-
     public InputField nameField;
     public GameObject randomizeColourButton;
 
@@ -87,7 +87,6 @@ public class MenuController : MonoBehaviour {
 
         zoomIn.SetActive(false);
         zoomOut.SetActive(false);
-        reportButton.SetActive(false);
         teleportButton.SetActive(false);
         swatches.transform.localScale = new Vector3(0, 0, 0);
 
@@ -99,17 +98,12 @@ public class MenuController : MonoBehaviour {
     {
         PlayClickSound();
         // If menu is already open, clicking button closes the menu
-        if (menuIsOpen)
-        {
-            CloseMenu();
-            return;
-        }
 
-        BlurBackground();
-        reportButton.SetActive(true);
+        CloseMenu();
+
+
         menuIsOpen = true;
 
-        reportMenu.SetActive(true);
 
         zoomIn.SetActive(false);
         zoomOut.SetActive(false);
@@ -117,6 +111,25 @@ public class MenuController : MonoBehaviour {
         settingsButton.SetActive(false);
 
         swatches.transform.localScale = new Vector3(0, 0, 0);
+
+        StartCoroutine(TakeScreenshot()); // Take screenshot once we've hidden all elements
+    }
+
+    IEnumerator TakeScreenshot()
+    {
+        // Zooms out to max level, takes screenshot, zooms back in
+        int cameraLevel = cameraScript.cameraLevel;
+        cameraScript.SetCameraLevel(4);
+
+        yield return new WaitForEndOfFrame();
+
+        Texture2D screenie = ScreenCapture.CaptureScreenshotAsTexture();
+        screenShot.GetComponent<RawImage>().texture = screenie;
+        //screenShot.GetComponent<RectTransform>().sizeDelta = new Vector2(screenie.width / 2, screenie.height / 2);
+
+        cameraScript.SetCameraLevel(cameraLevel);
+        BlurBackground();
+        reportMenu.SetActive(true);
     }
 
     public void ClickTeleportButton()
@@ -137,7 +150,6 @@ public class MenuController : MonoBehaviour {
 
         zoomIn.SetActive(false);
         zoomOut.SetActive(false);
-        reportButton.SetActive(false);
         settingsButton.SetActive(false);
 
         swatches.transform.localScale = new Vector3(0, 0, 0);
@@ -149,7 +161,8 @@ public class MenuController : MonoBehaviour {
         UnBlurBackground();
         zoomIn.SetActive(true);
         zoomOut.SetActive(true);
-        //reportButton.SetActive(true);
+
+
         teleportButton.SetActive(true);
         settingsButton.SetActive(true);
         swatches.transform.localScale = new Vector3(1, 1, 1);
