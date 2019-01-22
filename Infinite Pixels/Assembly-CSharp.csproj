@@ -79,6 +79,7 @@
     <Compile Include="Assets\PixelManager.cs" />
     <Compile Include="Assets\PixelScript.cs" />
     <Compile Include="Assets\PostEffectsBase.cs" />
+    <Compile Include="Assets\ReportingManager.cs" />
     <Compile Include="Assets\ScreenshotTaker.cs" />
     <Compile Include="Assets\SelectorController.cs" />
     <Compile Include="Assets\SwatchContainerSlider.cs" />

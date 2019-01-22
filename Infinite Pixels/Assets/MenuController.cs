@@ -227,6 +227,7 @@ public class MenuController : MonoBehaviour {
     // Triggered when the screen was tapped outside of the menu, just close it
     public void ScreenWasClickedElsewhere()
     {
+        if (reportMenu.activeSelf) return; // Don't allow clicking outside the report menu
         if (menuIsOpen) CloseMenu();
     }
 

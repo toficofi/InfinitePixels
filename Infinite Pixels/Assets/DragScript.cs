@@ -68,8 +68,6 @@ public class DragScript : MonoBehaviour {
         mouseDown = false;
         float framesSince = Time.frameCount - frameCountAtMouseDown;
         float delta = (startPosition - new Vector2(Input.mousePosition.x, Input.mousePosition.y)).magnitude;
-        Debug.Log("Delta: " + delta + " - distance before drag: " + distanceBeforeDrag);
-        Debug.Log("Frames since mouseDown: " + framesSince);
         if (IsResting() && delta < distanceBeforeDrag && framesSince < framesPassBeforeDrag) {
             
             selector.PlacePixel();
