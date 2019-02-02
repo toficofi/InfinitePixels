@@ -69,7 +69,7 @@ let server = net.createServer((socket) => {
     delete socket._readableState.decoder; // To force stream to read out numbers
     socket.shouldDisconnect = false
 
-    logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress, socket.remotePort, (Object.keys(clients).length + 1).toString().bold)
+    logger.info("Accepted".green + " connection from %s:%s, there are now %s connected", socket.remoteAddress, socket.remotePort, (Object.keys(clients).length + 1).toString())
 
     socket.on("close", () => {
 
@@ -80,7 +80,7 @@ let server = net.createServer((socket) => {
             logger.warn("Connection %s:%s disconnected without authenticating", socket.remoteAddress, socket.remotePort)
         }
 
-        logger.info("Lost".red + " connection from %s:%s, there are now %s connected", socket.remoteAddress.bold, socket.remotePort, Object.keys(clients).length.toString().bold)
+        logger.info("Lost".red + " connection from %s:%s, there are now %s connected", socket.remoteAddress, socket.remotePort, Object.keys(clients).length.toString())
     })
     
     currentPacketIdentifier = null
@@ -89,25 +89,25 @@ let server = net.createServer((socket) => {
         switch (er.code) {
           // This is the expected case
           case 'ECONNRESET':
-            if (socket.client) logger.debug("ECONNRESET".bold + " from player %s", socket.client.clientid)
-            else logger.debug("ECONNRESET".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
+            if (socket.client) logger.debug("ECONNRESET" + " from player %s", socket.client.clientid)
+            else logger.debug("ECONNRESET" + " from %s:%s", socket.remoteAddress, socket.remotePort)
             break;
     
           // On Windows, this sometimes manifests as ECONNABORTED
           case 'ECONNABORTED':
-            if (socket.client) logger.debug("ECONNABORTED".bold + " from player %s", socket.client.clientid)
-            else logger.debug("ECONNABORTED".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
+            if (socket.client) logger.debug("ECONNABORTED" + " from player %s", socket.client.clientid)
+            else logger.debug("ECONNABORTED" + " from %s:%s", socket.remoteAddress, socket.remotePort)
             break;
     
           // This test is timing sensitive so an EPIPE is not out of the question.
           // It should be infrequent, given the 50 ms timeout, but not impossible.
           case 'EPIPE':
-            if (socket.client) logger.warn("EPIPE".bold + " from player %s", socket.client.clientid)
-            else logger.warn("EPIPE".bold + " from %s:%s", socket.remoteAddress, socket.remotePort)
+            if (socket.client) logger.warn("EPIPE" + " from player %s", socket.client.clientid)
+            else logger.warn("EPIPE" + " from %s:%s", socket.remoteAddress, socket.remotePort)
     
           default:
-            if (socket.client) logger.warn("Unknown socket error %j".bold + " from player %s", er, socket.client.clientid)
-            else logger.warn("Unknown socket error %j".bold + "from %s:%s", er, socket.remoteAddress, socket.remotePort)
+            if (socket.client) logger.warn("Unknown socket error %j" + " from player %s", er, socket.client.clientid)
+            else logger.warn("Unknown socket error %j" + "from %s:%s", er, socket.remoteAddress, socket.remotePort)
             break;
             }
         }
@@ -120,7 +120,7 @@ let server = net.createServer((socket) => {
 function readString(data, offset) {
     let stringLength = data.readUInt8(offset)
     let string = data.toString("ascii", offset + 1, offset + 1 + stringLength)
-    logger.debug("Read string %s of length %d with offset %d", string.bold, stringLength, offset)
+    logger.debug("Read string %s of length %d with offset %d", string, stringLength, offset)
     return string
 }
 
@@ -185,7 +185,7 @@ function endConnection(socket) {
 function processPacket(data, socket) {
     let identifier = currentPacketInfo.ident
     if (identifier !== 0 && !socket.client) { 
-        logger.warn("Unauthenticated client %s:%s sent a non-0 packet with ident %d, " + "disconnecting".red.bold, socket.remoteAddress.bold, socket.remotePort, identifier)
+        logger.warn("Unauthenticated client %s:%s sent a non-0 packet with ident %d, " + "disconnecting".red, socket.remoteAddress, socket.remotePort, identifier)
         endConnection(socket)
         return
     }
@@ -205,9 +205,9 @@ function processPacket(data, socket) {
                 socket.client.colour = {r: 1.0, g: 1.0, b: 1.0}
                 socket.client.selectorColour = 1
                 clients[clientid] = socket.client
-                logger.info("Authenticated".green + " %s:%s as %s", socket.remoteAddress.bold, socket.remotePort, clientid)
+                logger.info("Authenticated".green + " %s:%s as %s", socket.remoteAddress, socket.remotePort, clientid)
             } else {
-                logger.info("Banned".red + " %s:%s as %s", socket.remoteAddress.bold, socket.remotePort, clientid)
+                logger.info("Banned".red + " %s:%s as %s", socket.remoteAddress, socket.remotePort, clientid)
                 response = new Buffer([0x02])
                 response = Buffer.concat([response, new Buffer.from("Banned from server", "ascii")])
             }
@@ -224,7 +224,7 @@ function processPacket(data, socket) {
             socket.client.velocity.x = velx
             socket.client.velocity.z = velz
 
-            logger.debug(socket.client.clientid.bold + " updated position to p[%d, %d], v[%d, %d]", posx, posz, velx, velz)
+            logger.debug(socket.client.clientid + " updated position to p[%d, %d], v[%d, %d]", posx, posz, velx, velz)
 
             for (key in clients) {
                 clnt = clients[key]
@@ -246,13 +246,13 @@ function processPacket(data, socket) {
             let chunkz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(chunkx, chunkz)) {
-                logger.warn(socket.client.clientid.bold + " tried to request chunk outwith world size of to %d, [%d, %d]", worldSize, chunkx, chunkz)
+                logger.warn(socket.client.clientid + " tried to request chunk outwith world size of to %d, [%d, %d]", worldSize, chunkx, chunkz)
                 break;
             }
            
             newChunk = getChunkAtPosition({x: chunkx, y: chunkz})
 
-            logger.debug(socket.client.clientid.bold + " requested chunk [%d, %d]", chunkx, chunkz)
+            logger.debug(socket.client.clientid + " requested chunk [%d, %d]", chunkx, chunkz)
             sendChunkPacket(newChunk, socket.client)
             break
         case 7:
@@ -261,12 +261,12 @@ function processPacket(data, socket) {
             let pixelz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(pixelx, pixelz)) {
-                logger.warn(socket.client.clientid.bold + " tried to place pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
+                logger.warn(socket.client.clientid + " tried to place pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
                 break;
             }
 
             let pixelid = data.readInt32LE(8)
-            logger.verbose(socket.client.clientid.bold + " placed pixel at [%d, %d] in colour %d", pixelx, pixelz, pixelid)
+            logger.verbose(socket.client.clientid + " placed pixel at [%d, %d] in colour %d", pixelx, pixelz, pixelid)
             playerPlacedPixel(pixelx, pixelz, pixelid)
             break
         case 8:
@@ -275,7 +275,7 @@ function processPacket(data, socket) {
             let rpixelz = data.readInt32LE(4)
 
             if (!isWithinWorldBounds(rpixelx, rpixelz)) {
-                logger.warn(socket.client.clientid.bold + " tried to remove pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
+                logger.warn(socket.client.clientid + " tried to remove pixel outwith world size of of to %d, [%d, %d]", worldSize, pixelx, pixelz)
                 break;
             }
             playerRemovedPixel(rpixelx, rpixelz)
@@ -305,7 +305,7 @@ function processPacket(data, socket) {
             socket.client.colour = {r: r, g: g, b: b}
             socket.client.selectorColour = selectorColour
             
-            logger.verbose(socket.client.clientid.bold + " updated name to %s, colour to {%d,%d,%d} and selector colour to %d", playerName, r, g, b, selectorColour)
+            logger.verbose(socket.client.clientid + " updated name to %s, colour to {%d,%d,%d} and selector colour to %d", playerName, r, g, b, selectorColour)
 
             
             for (key in clients) {
@@ -328,7 +328,7 @@ function processPacket(data, socket) {
             }
             break
         default:
-            logger.warn("Invalid packet identifier %s from %s - ending connection", identifier.toString().bold, socket.client.clientid.bold)
+            logger.warn("Invalid packet identifier %s from %s - ending connection", identifier.toString(), socket.client.clientid)
             endConnection(socket)
             
     }
@@ -350,7 +350,7 @@ function readData(data, socket) {
                 currentPacketInfo = getPacketInformationFromHeader(data)
                 if (currentPacketInfo == null) {
                     if (socket.client) logger.warn("Tried to read packet identifier from %s but got " + "null".red + "! Disconnecting...", socket.client.clientid)
-                    else logger.warn("Tried to read packet identifier from " + "unauthed".bold + " %s:%s but got " + "null".red + "! Disconnecting...", socket.remoteAddress.bold, socket.remotePort)
+                    else logger.warn("Tried to read packet identifier from " + "unauthed" + " %s:%s but got " + "null".red + "! Disconnecting...", socket.remoteAddress, socket.remotePort)
 
                     endConnection(socket)
                     return  
@@ -376,8 +376,8 @@ function readData(data, socket) {
             }
         }
     } catch (e) {
-        if (socket.client) logger.warn("Error".red.bold + " while processing packet for %s. Current packet info: %j", socket.client.clientid.bold, currentPacketInfo)
-        else logger.warn("Error".red.bold + " while processing packet for unauthed %s:%s. Current packet info: %j", socket.remoteAddress.bold, socket.remotePort, currentPacketInfo)
+        if (socket.client) logger.warn("Error".red + " while processing packet for %s. Current packet info: %j", socket.client.clientid, currentPacketInfo)
+        else logger.warn("Error".red + " while processing packet for unauthed %s:%s. Current packet info: %j", socket.remoteAddress, socket.remotePort, currentPacketInfo)
         logger.error(e)
         endConnection(socket)
     }
@@ -386,7 +386,7 @@ function readData(data, socket) {
 publicip.v4().then(ip => {
     if (connectToLocalhost) ip = "localhost"
 
-    logger.info("Starting server with outwards-facing IP %s:%s", ip.bold.green, port)
+    logger.info("Starting server with outwards-facing IP %s:%s", ip.green, port)
     server.listen(port, ip, (err) => {
         logger.info("READY".green + " - accepting connections")
     })
@@ -437,7 +437,7 @@ function sendChunkPacket(chunk, client) {
     try { 
         // If chunk has no pixel data just send a blank chunk packet
         if (Object.keys(chunk.pixels).length == 0) {
-            logger.silly("Sending " + "blank".bold + " chunk [%d, %d] to %s", chunk.x, chunk.y, client.clientid)
+            logger.silly("Sending " + "blank" + " chunk [%d, %d] to %s", chunk.x, chunk.y, client.clientid)
             let emptyChunkPacket = new Buffer(9)
             emptyChunkPacket.writeInt8(0x05, 0)
             emptyChunkPacket.writeInt32LE(chunk.x, 1)
@@ -519,7 +519,7 @@ function getNearestChunkTo(position) {
 
 
 function saveChunks() {
-    logger.verbose("SAVING WORLD...".bold.green)
+    logger.verbose("SAVING WORLD...".green)
     for (chunkloc in chunks) {
         saveChunk(chunks[chunkloc])
     }
