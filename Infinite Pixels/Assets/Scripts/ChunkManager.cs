@@ -259,7 +259,7 @@ public class ChunkManager : MonoBehaviour {
     public GameObject GetChunkAtPosition(Vector3 position)
     {
         Vector3 snappedPosition = SnapPositionToChunk(position);
-        return GameObject.Find("Chunk" + snappedPosition.x + "," + snappedPosition.z);
+        return GetChunkFromExactPosition(snappedPosition);//chunks["Chunk" + snappedPosition.x + "," + snappedPosition.z]; // GameObject.Find("Chunk" + snappedPosition.x + "," + snappedPosition.z);
         /*
         return GameObject.Find("Chunk" + SnapPositionToChunk(position))
         Collider[] colliders;

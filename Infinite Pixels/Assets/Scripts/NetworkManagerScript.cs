@@ -34,7 +34,7 @@ public class NetworkManagerScript : MonoBehaviour
     public GameObject connectingPanelText;
     bool shouldDisplayConnectingPanel = false;
     string connectingPanelTextMessage;
-    string uniqueIdentifier;
+    public string uniqueIdentifier;
     public NetworkStream currentStream = null;
     public BinaryWriter currentBinaryWriter = null;
     public MemoryStream currentMemoryStream = null;
@@ -587,6 +587,12 @@ public class NetworkManagerScript : MonoBehaviour
         Debug.Log("Destroying");
         shouldRun = false;
         if (socketConnection != null && socketConnection.GetStream() != null) socketConnection.GetStream().Close();
+    }
+
+    public string GetHost()
+    {
+        if (connectToLocalhost) return "localhost";
+        else return host;
     }
 
     void SendConnectionRequest(string identifier)

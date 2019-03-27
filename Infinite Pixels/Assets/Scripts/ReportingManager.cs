@@ -1,12 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class ReportingManager : MonoBehaviour {
     MenuController menu;
+    public NetworkManagerScript network;
     public int secondsBeforeClosingMenu = 5;
     public Text reportButtonText;
+    public Texture2D image;
     string originalReportButtonText;
     bool sending = false;
     bool sent = false;
@@ -28,7 +31,7 @@ public class ReportingManager : MonoBehaviour {
 
         sending = true;
         reportButtonText.text = "SENDING...";
-        SendReport(null); 
+        StartCoroutine(SendReport());
         reportButtonText.text = "SENT :)";
         sending = false;
         sent = true;
@@ -58,10 +61,18 @@ public class ReportingManager : MonoBehaviour {
     }
 
 
-    public bool SendReport(Texture2D image)
+    public IEnumerator SendReport()
     {
-        // Upload report to servers
-        return true;
+        WWWForm form = new WWWForm();
+        form.AddField("hash", network.uniqueIdentifier);
+        form.AddField("x", (int)network.tvDude.gameObject.transform.position.x);
+        form.AddField("y", (int)network.tvDude.gameObject.transform.position.z);
+        form.AddBinaryData("image", image.EncodeToPNG());
+        Debug.Log("http://" + network.GetHost() + ":69/report");
+        UnityWebRequest www = UnityWebRequest.Post("http://" + network.GetHost() + ":69/report", form);
+        yield return www.SendWebRequest();
+
+        Debug.Log("Got back " + www.error);
     }
 
 	// Update is called once per frame

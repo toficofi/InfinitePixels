@@ -5,9 +5,10 @@ var colors = require('colors');
 let chunks = {}
 let viewingDistance = 40
 let chunkSize = 16
+let reportServerPort = 69
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = false
+let connectToLocalhost = true
 let loggingLevel = process.env.LOG_LEVEL || "debug"
 
 // LOGGING SETUP
@@ -38,6 +39,17 @@ var logger = new winston.Logger({
 });
 
 logger.info('Loading Infinite Pixels server');
+
+logger.info("Forking off report server...")
+
+// for spawning report-server.js
+let cp = require("child_process")
+let reportServer = cp.fork("./report-server.js")
+
+reportServer.on('error', (error) => {
+    logger.error("Report server error: " + error.toString())
+})
+
 
 if (!fs.existsSync("world")) {
     logger.warn('No world folder detected, so making a new one')
@@ -389,6 +401,8 @@ publicip.v4().then(ip => {
     logger.info("Starting server with outwards-facing IP %s:%s", ip.green, port)
     server.listen(port, ip, (err) => {
         logger.info("READY".green + " - accepting connections")
+
+        reportServer.send({type: "start", ip: ip, port: reportServerPort})
     })
 });
 

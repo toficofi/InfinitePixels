@@ -34,9 +34,11 @@ public class MenuController : MonoBehaviour {
     public AudioClip zoomOutSound;
     public AudioClip zoomInSound;
 
+    ReportingManager reportingManager;
 	// Use this for initialization
 	void Start () {
         audioSource = this.GetComponent<AudioSource>();
+        reportingManager = GetComponent<ReportingManager>();
     }
 	
 	// Update is called once per frame
@@ -129,6 +131,7 @@ public class MenuController : MonoBehaviour {
 
         cameraScript.SetCameraLevel(cameraLevel);
         BlurBackground();
+        reportingManager.image = screenie;
         reportMenu.SetActive(true);
     }
 
