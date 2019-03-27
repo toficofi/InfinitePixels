@@ -8,7 +8,7 @@ let chunkSize = 16
 let reportServerPort = 69
 let port = 80
 let worldSize = 5000
-let connectToLocalhost = true
+let connectToLocalhost = false
 let loggingLevel = process.env.LOG_LEVEL || "debug"
 
 // LOGGING SETUP

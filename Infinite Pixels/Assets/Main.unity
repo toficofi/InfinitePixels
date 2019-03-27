@@ -11601,13 +11601,14 @@ MonoBehaviour:
   port: 80
   connectingPanel: {fileID: 1082993689}
   connectingPanelText: {fileID: 1556569805}
+  uniqueIdentifier: 
   isConnected: 0
   otherPlayerPrefab: {fileID: 1455398763721364, guid: 3c5258490c61af14b91cf40e43410a35,
     type: 3}
   tvDudePrefab: {fileID: 1557582353078564, guid: 39364e7c75e50b348b226a195cd28eb2,
     type: 3}
   tvDude: {fileID: 78067930}
-  connectToLocalhost: 1
+  connectToLocalhost: 0
   currentPlayerName: 
   menuController: {fileID: 1333372526}
   colourManager: {fileID: 192004321}

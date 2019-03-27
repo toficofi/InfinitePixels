@@ -9,5 +9,9 @@ EditorBuildSettings:
     path: Assets/MainMenu.unity
     guid: 259eebb9c22613c4ca31fde2f1289224
   - enabled: 1
+    path: Assets/UserPolicyScene.unity
+    guid: 13e11f63a5f1236488ad5f8f84f50ef2
+  - enabled: 1
     path: Assets/Main.unity
     guid: ef70e51220a9335479b56a99248284e1
+  m_configObjects: {}
