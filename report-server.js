@@ -57,7 +57,7 @@ discord.on('ready', () => {
 
 discord.on('error', (error) => {
     console.log("Error with report Discord bot: " + error.toString())
-}
+})
 
 
 server.on("error", (err) => {
