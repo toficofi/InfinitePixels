@@ -218,6 +218,11 @@ function processPacket(data, socket) {
                 socket.client.selectorColour = 1
                 clients[clientid] = socket.client
                 logger.info("Authenticated".green + " %s:%s as %s", socket.remoteAddress, socket.remotePort, clientid)
+
+                reportServer.send({
+                    type: "playerJoined",
+                    identifier: socket.remoteAddress + "#" + clientid
+                })
             } else {
                 logger.info("Banned".red + " %s:%s as %s", socket.remoteAddress, socket.remotePort, clientid)
                 response = new Buffer([0x02])

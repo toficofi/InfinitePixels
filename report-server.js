@@ -4,7 +4,7 @@ const multer = require("multer")
 const fs = require("fs")
 const discordLib = require("discord.js")
 const bodyParser = require("body-parser")
-
+const discordChannel = "560418085476106240"
 const server = express()
 const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, __dirname + "/reports"),
@@ -33,21 +33,29 @@ server.post('/report', uploader.fields([{name: "image", maxCounts: 1}]), (req, r
     embed.attachFile(req.files["image"][0].path)
     embed.setImage("attachment://" + req.files["image"][0].fileName)
 
-    discord.channels.get("560418085476106240").send(embed)
+    discord.channels.get(discordChannel).send(embed)
 })
 
 
-process.once("message", (msg) => {
+
+
+process.on("message", (msg) => {
     // take msgs with .type start only
-    if (!msg.type || msg.type !== "start") return
+    if (msg.type == "start") {
+        let ip = msg.ip
+        let port = msg.port
 
-    let ip = msg.ip
-    let port = msg.port
-
-    discord.login("NTYwNDE3MTk5NTIxNjYwOTI4.D3zqDg.wxSa4V1MTgndjY-guD3Mn6OAMAU")
-    server.listen(port, () => {
-        console.log("Report server up and running on " + ip + ":" + port + "!")
-    })
+        discord.login("NTYwNDE3MTk5NTIxNjYwOTI4.D3zqDg.wxSa4V1MTgndjY-guD3Mn6OAMAU")
+        server.listen(port, () => {
+            console.log("Report server up and running on " + ip + ":" + port + "!")
+        })
+    } else {
+        if (discord.channels.get(discordChannel) == undefined) return
+        switch (msg.type) {
+            case "playerJoined":
+                discord.channels.get(discordChannel).send("🆕 **PLAYER JOINED** " + msg.identifier)
+        }
+    }
 })
 
 discord.on('ready', () => {
