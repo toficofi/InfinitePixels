@@ -131,7 +131,7 @@ b3ab2106268377ffe25dd18ac23dca28 Unity.TextMeshPro.dll:TMPro.TMP_Asset
 71bb6a6b6c8f052f948db64c7dd3ca4f Unity.TextMeshPro.dll:TMPro.TMP_SpriteAnimator
 08c085a65329ab1868b576e89713ffab Assembly-CSharp.dll:.CameraScript
 4fd8bf02e3089425d3502e26c44ba31a Unity.TextMeshPro.dll:TMPro.TextContainer
-ceae696842f2d7f5bc7678cb7be4861b Assembly-CSharp.dll:.ScreenshotTaker
+71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:.ScreenshotTaker
 df48e5f8eeae6753c99c4fe25c9ac3cf Assembly-CSharp.dll:.ChunkScript
 e6ae40841db498b6e673877ac45ad208 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkAnimator
 71bb6a6b6c8f052f948db64c7dd3ca4f UnityEngine.Networking.dll:UnityEngine.Networking.NetworkBehaviour

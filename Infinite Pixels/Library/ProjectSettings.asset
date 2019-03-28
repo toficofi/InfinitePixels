@@ -113,7 +113,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.0.4b2
+  bundleVersion: 1.0.5
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -150,7 +150,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: me.joshbe.infinitepixels
   buildNumber: {}
-  AndroidBundleVersionCode: 9
+  AndroidBundleVersionCode: 11
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
@@ -256,7 +256,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: e1d24a29a3c83a8408b213447a55ef45, type: 3}
+      m_Icon: {fileID: 2800000, guid: f1a8791633d17dc4e8e5052179a80420, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -264,8 +264,8 @@ PlayerSettings:
   - m_BuildTarget: Android
     m_Icons:
     - m_Textures:
-      - {fileID: 2800000, guid: e1d24a29a3c83a8408b213447a55ef45, type: 3}
-      - {fileID: 0}
+      - {fileID: 2800000, guid: b88349b437c50004a9cf3e168b34232a, type: 3}
+      - {fileID: 2800000, guid: 8bb76d6a67e6a8840811dde62cac7c6b, type: 3}
       m_Width: 432
       m_Height: 432
       m_Kind: 2
@@ -296,7 +296,7 @@ PlayerSettings:
       m_Kind: 2
       m_SubKind: 
     - m_Textures:
-      - {fileID: 2800000, guid: e1d24a29a3c83a8408b213447a55ef45, type: 3}
+      - {fileID: 2800000, guid: f0a5421598de1374cb0eef632cd2c2e4, type: 3}
       m_Width: 192
       m_Height: 192
       m_Kind: 1
@@ -332,7 +332,7 @@ PlayerSettings:
       m_Kind: 1
       m_SubKind: 
     - m_Textures:
-      - {fileID: 2800000, guid: e1d24a29a3c83a8408b213447a55ef45, type: 3}
+      - {fileID: 2800000, guid: f0a5421598de1374cb0eef632cd2c2e4, type: 3}
       m_Width: 192
       m_Height: 192
       m_Kind: 0
@@ -693,7 +693,7 @@ PlayerSettings:
   facebookStatus: 1
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 6
   cloudProjectId: 6bc3133c-b2ae-4540-a692-1c0420463d9c
   framebufferDepthMemorylessMode: 0
   projectName: Infinite Pixels
